@@ -96,10 +96,13 @@
     <div id="left" class="control-btn">←</div>
     <div id="right" class="control-btn">→</div>
 
+    <!-- Canvas مخفي لرسم إطارات الفيديو بسلاسة للثلاثي الأبعاد -->
+    <canvas id="videoCanvas" width="512" height="768" style="display:none;"></canvas>
+
     <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
         
         <a-assets>
-            <video id="teacherVideo" src="teacher-video.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
+            <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
             <img id="teacherFallback" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80">
         </a-assets>
 
@@ -128,13 +131,13 @@
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- أفتار المعلم (صورة/فيديو) -->
+        <!-- أفتار المعلم (شاشة العرض) -->
         <a-entity id="teacher-avatar-container" position="-4.5 2.5 -9.5">
-            <a-box id="avatarBox" width="2.8" height="4.2" depth="0.05" src="#teacherFallback" material="shader: flat;"></a-box>
+            <a-plane id="avatarBox" width="2.8" height="4.2" src="#teacherFallback" material="shader: flat; transparent: true;"></a-plane>
             <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
 
-        <!-- الكراسي الوردي -->
+        <!-- الكراسي -->
         <a-entity id="chairs-matrix">
             <a-entity position="-3 0 -3.5" rotation="0 180 0">
                 <a-box position="-0.225 0.225 0" width="0.05" height="0.45" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
@@ -142,14 +145,12 @@
                 <a-box position="0 0.45 0" width="0.5" height="0.05" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
                 <a-box position="0 0.7 -0.2" width="0.5" height="0.45" depth="0.05" color="#FF69B4" material="shader: flat;"></a-box>
             </a-entity>
-
             <a-entity position="0 0 -3.5" rotation="0 180 0">
                 <a-box position="-0.225 0.225 0" width="0.05" height="0.45" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
                 <a-box position="0.225 0.225 0" width="0.05" height="0.45" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
                 <a-box position="0 0.45 0" width="0.5" height="0.05" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
                 <a-box position="0 0.7 -0.2" width="0.5" height="0.45" depth="0.05" color="#FF69B4" material="shader: flat;"></a-box>
             </a-entity>
-
             <a-entity position="3 0 -3.5" rotation="0 180 0">
                 <a-box position="-0.225 0.225 0" width="0.05" height="0.45" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
                 <a-box position="0.225 0.225 0" width="0.05" height="0.45" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
@@ -165,17 +166,43 @@
     </a-scene>
 
     <script>
+        var video = document.getElementById('teacherVideo');
+        var canvas = document.getElementById('videoCanvas');
+        var ctx = canvas.getContext('2d');
+        var avatarBox = document.getElementById('avatarBox');
+        var btn = document.getElementById('play-video-btn');
+        var isCanvasTextureActive = false;
+
         function startTeacherAvatar() {
-            var video = document.getElementById('teacherVideo');
-            var avatarBox = document.getElementById('avatarBox');
-            var btn = document.getElementById('play-video-btn');
-            
+            if (!video) return;
+
+            video.muted = false;
             video.play().then(() => {
-                avatarBox.setAttribute('src', '#teacherVideo');
                 btn.style.display = 'none';
+                
+                if (!isCanvasTextureActive) {
+                    isCanvasTextureActive = true;
+                    // ربط محرك الرسم باللوحة ثلاثية الأبعاد
+                    var canvasTexture = new THREE.CanvasTexture(canvas);
+                    var mesh = avatarBox.getObject3D('mesh');
+                    if (mesh) {
+                        mesh.material.map = canvasTexture;
+                        mesh.material.needsUpdate = true;
+                    }
+
+                    // تحديث رسم فريمات الفيديو بشكل متواصل
+                    function renderFrame() {
+                        if (!video.paused && !video.ended) {
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            canvasTexture.needsUpdate = true;
+                        }
+                        requestAnimationFrame(renderFrame);
+                    }
+                    renderFrame();
+                }
             }).catch(err => {
-                alert("تعذر الوصول لملف الفيديو المحلي من متصفح المحمول بسبب قيود النظام، سيتم عرض معلم 3D بصورة بديلة.");
-                btn.style.display = 'none';
+                console.log("تنبيه التشغيل:", err);
+                avatarBox.setAttribute('src', '#teacherFallback');
             });
         }
 
