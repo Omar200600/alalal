@@ -49,7 +49,7 @@
         .btn-send { background: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .btn-action { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; color: white; }
 
-        .control-btn { position: fixed; width: 55px; height: 55px; background: rgba(212, 175, 55, 1); border: 2px solid white; border-radius: 50%; z-index: 9999; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; touch-action: none; font-size: 20px; }
+        .control-btn { position: fixed; width: 55px; height: 55px; background: rgba(212, 175, 55, 0.9); border: 2px solid white; border-radius: 50%; z-index: 9999; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; touch-action: none; font-size: 20px; user-select: none; }
         #up { bottom: 120px; left: 80px; } 
         #down { bottom: 20px; left: 80px; } 
         #left { bottom: 70px; left: 20px; } 
@@ -73,6 +73,7 @@
         </div>
     </div>
 
+    <!-- أزرار التحكم بالحركة -->
     <div id="up" class="control-btn">↑</div>
     <div id="down" class="control-btn">↓</div>
     <div id="left" class="control-btn">←</div>
@@ -83,8 +84,8 @@
     <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
         
         <a-assets>
+            <!-- الفيديو صامت كلياً ليتكرر بدون إزعاج -->
             <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-            <img id="teacherFallback" src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80">
         </a-assets>
 
         <!-- إضاءة المشهد -->
@@ -112,13 +113,13 @@
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- أفتار المعلم (شاشة العرض مفرغة الخلفية) -->
+        <!-- أفتار المعلم (مفرغ الكروما) -->
         <a-entity id="teacher-avatar-container" position="-4.5 2.5 -9.5">
             <a-plane id="avatarBox" width="2.8" height="4.2" material="shader: flat; transparent: true; side: double;"></a-plane>
             <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
 
-        <!-- الكراسي الوردي -->
+        <!-- الكراسي -->
         <a-entity id="chairs-matrix">
             <a-entity position="-3 0 -3.5" rotation="0 180 0">
                 <a-box position="-0.225 0.225 0" width="0.05" height="0.45" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
@@ -151,67 +152,110 @@
         var canvas = document.getElementById('videoCanvas');
         var ctx = canvas.getContext('2d');
         var avatarBox = document.getElementById('avatarBox');
+        var canvasTexture = null;
+        var isSetupDone = false;
+        var hasWelcomed = false;
 
-        // تفعيل الصوت المباشر فور لمس الشاشة لمراعاة شروط المتصفحات
-        window.addEventListener('click', enableAudio, { once: true });
-        window.addEventListener('touchstart', enableAudio, { once: true });
+        function initAvatarChroma() {
+            if (isSetupDone) return;
+            isSetupDone = true;
 
-        function enableAudio() {
-            if (video) {
-                video.muted = false;
+            // تشغيل الفيديو بشكل صامت للتكرار الحركي فقط
+            video.muted = true;
+            video.play().catch(e => console.log("خطأ بالتشغيل:", e));
+
+            // نطق الترحيب لمرة واحدة فقط عند دخول الفصل
+            if (!hasWelcomed) {
+                hasWelcomed = true;
+                speak("أهلاً بك في فصل الفيزياء الافتراضي! اسألني عن أي قانون أو مفهوم فيزيائي وسأجيبك فوراً.");
             }
-        }
 
-        // تشغيل برمجية إزالة الخلفية الخضراء تلقائياً
-        window.addEventListener('load', function() {
-            if (!video) return;
+            canvasTexture = new THREE.CanvasTexture(canvas);
+            var mesh = avatarBox.getObject3D('mesh');
+            if (mesh) {
+                mesh.material.map = canvasTexture;
+                mesh.material.transparent = true;
+                mesh.material.needsUpdate = true;
+            }
 
-            var canvasTexture = new THREE.CanvasTexture(canvas);
-            
-            // انتظار تجهيز عنصر الشاشة لتطبيق الخامة
-            var checkMesh = setInterval(function() {
-                var mesh = avatarBox.getObject3D('mesh');
-                if (mesh) {
-                    mesh.material.map = canvasTexture;
-                    mesh.material.transparent = true;
-                    mesh.material.needsUpdate = true;
-                    clearInterval(checkMesh);
-                }
-            }, 100);
-
-            function renderChromaFrame() {
-                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            function processFrame() {
+                if (!video.paused && !video.ended) {
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
                     var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     var l = frame.data.length / 4;
 
-                    // كود الكروما كاي (تفريق وشطب اللون الأخضر)
                     for (var i = 0; i < l; i++) {
                         var r = frame.data[i * 4 + 0];
                         var g = frame.data[i * 4 + 1];
                         var b = frame.data[i * 4 + 2];
 
-                        // إذا كان اللون يميل للخضرة يتم إخفاؤه
-                        if (g > 90 && g > r * 1.25 && g > b * 1.25) {
-                            frame.data[i * 4 + 3] = 0; // إزالة الشفافية
+                        // تفريغ الكروما الخضراء
+                        if (g > 90 && r < 140 && b < 140 && g > r * 1.1) {
+                            frame.data[i * 4 + 3] = 0;
                         }
                     }
                     ctx.putImageData(frame, 0, 0);
-                    canvasTexture.needsUpdate = true;
+                    if (canvasTexture) canvasTexture.needsUpdate = true;
                 }
-                requestAnimationFrame(renderChromaFrame);
+                requestAnimationFrame(processFrame);
             }
+            processFrame();
+        }
 
-            video.play().then(() => {
-                renderChromaFrame();
-            }).catch(err => {
-                console.log("تشغيل افتراضي بدون صوت لحين لمس الشاشة:", err);
-                video.muted = true;
-                video.play();
-                renderChromaFrame();
-            });
-        });
+        // بدء المشهد والترحيب بمجرد أول لمسة للشاشة
+        window.addEventListener('touchstart', initAvatarChroma, {once: true});
+        window.addEventListener('click', initAvatarChroma, {once: true});
 
+        // منطق أزرار التحكم بالحركة
+        var rig = document.getElementById('rig');
+        var head = document.getElementById('head');
+        var keys = {up: false, down: false, left: false, right: false};
+
+        function setupBtn(id, k) {
+            var b = document.getElementById(id);
+            if (!b) return;
+
+            var start = (e) => { e.preventDefault(); keys[k] = true; };
+            var end = (e) => { e.preventDefault(); keys[k] = false; };
+
+            b.addEventListener('touchstart', start, {passive: false});
+            b.addEventListener('touchend', end, {passive: false});
+            b.addEventListener('mousedown', start);
+            b.addEventListener('mouseup', end);
+            b.addEventListener('mouseleave', end);
+        }
+
+        setupBtn('up', 'up');
+        setupBtn('down', 'down');
+        setupBtn('left', 'left');
+        setupBtn('right', 'right');
+
+        // حلقة التحديث المستمر للحركة
+        setInterval(() => {
+            if (!rig || !head) return;
+            var pos = rig.getAttribute('position');
+            var rot = head.getAttribute('rotation');
+            var ang = rot.y * Math.PI / 180;
+            var s = 0.15; // سرعة الحركة
+            
+            let nextX = pos.x;
+            let nextZ = pos.z;
+
+            if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
+            if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
+            if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
+            if(keys.right){ nextX += Math.cos(ang)*s; nextZ -= Math.sin(ang)*s; }
+
+            // قيود حدود الجدران
+            if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
+                pos.x = nextX;
+                pos.z = nextZ;
+                rig.setAttribute('position', pos);
+            }
+        }, 20);
+
+        // الدردشة والتفاعل
         function askTeacher() {
             const input = document.getElementById('user-input');
             const chatHistory = document.getElementById('chat-history');
@@ -231,7 +275,7 @@
 
                 blackboardText.setAttribute('value', response.boardText);
                 speak(response.speech);
-            }, 500);
+            }, 400);
         }
 
         function generateTeacherResponse(question) {
@@ -263,38 +307,6 @@
                 window.speechSynthesis.speak(utterance);
             }
         }
-
-        var rig = document.getElementById('rig'); var head = document.getElementById('head');
-        var keys = {up: false, down: false, left: false, right: false};
-        function setupBtn(id, k) {
-            var b = document.getElementById(id);
-            b.addEventListener('touchstart', (e)=>{e.preventDefault(); keys[k]=true;});
-            b.addEventListener('touchend', (e)=>{e.preventDefault(); keys[k]=false;});
-            b.addEventListener('mousedown', ()=>{keys[k]=true;});
-            b.addEventListener('mouseup', ()=>{keys[k]=false;});
-        }
-        setupBtn('up','up'); setupBtn('down','down'); setupBtn('left','left'); setupBtn('right','right');
-
-        setInterval(() => {
-            var pos = rig.getAttribute('position'); var rot = head.getAttribute('rotation');
-            var ang = rot.y * Math.PI / 180; var s = 0.12;
-            
-            let nextX = pos.x;
-            let nextZ = pos.z;
-
-            if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
-            if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
-            if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
-            if(keys.right){ nextX += Math.cos(ang)*s; nextZ -= Math.sin(ang)*s; }
-            
-            let isInsideChairsZone = (nextX > -4 && nextX < 4 && nextZ > -4.5 && nextZ < 0.5);
-
-            if (!isInsideChairsZone && nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
-                pos.x = nextX;
-                pos.z = nextZ;
-            }
-            rig.setAttribute('position', pos);
-        }, 20);
     </script>
 </body>
 </html>
