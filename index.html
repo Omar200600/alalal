@@ -9,22 +9,6 @@
         .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
 
         #nav-panel { position: fixed; top: 10px; right: 10px; z-index: 9999; background: white; border: 2px solid #D4AF37; padding: 10px; border-radius: 10px; width: 140px; }
-        
-        #play-video-btn {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 9999;
-            background: #22c55e;
-            color: white;
-            border: 2px solid white;
-            padding: 12px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-        }
 
         #chat-panel {
             position: fixed;
@@ -74,8 +58,6 @@
 </head>
 <body>
 
-    <button id="play-video-btn" onclick="startTeacherAvatar()">🎬 تشغيل أفتار المعلم</button>
-
     <div id="nav-panel">
         <button class="btn-action" style="background:#8B4513;" onclick="window.location.href='corridor.html'">🏃 العودة للممر</button>
     </div>
@@ -96,7 +78,6 @@
     <div id="left" class="control-btn">←</div>
     <div id="right" class="control-btn">→</div>
 
-    <!-- Canvas مخفي لرسم إطارات الفيديو بسلاسة للثلاثي الأبعاد -->
     <canvas id="videoCanvas" width="512" height="768" style="display:none;"></canvas>
 
     <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
@@ -131,13 +112,13 @@
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- أفتار المعلم (شاشة العرض) -->
+        <!-- أفتار المعلم (شاشة العرض مفرغة الخلفية) -->
         <a-entity id="teacher-avatar-container" position="-4.5 2.5 -9.5">
-            <a-plane id="avatarBox" width="2.8" height="4.2" src="#teacherFallback" material="shader: flat; transparent: true;"></a-plane>
+            <a-plane id="avatarBox" width="2.8" height="4.2" material="shader: flat; transparent: true; side: double;"></a-plane>
             <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
 
-        <!-- الكراسي -->
+        <!-- الكراسي الوردي -->
         <a-entity id="chairs-matrix">
             <a-entity position="-3 0 -3.5" rotation="0 180 0">
                 <a-box position="-0.225 0.225 0" width="0.05" height="0.45" depth="0.45" color="#FF69B4" material="shader: flat;"></a-box>
@@ -170,41 +151,66 @@
         var canvas = document.getElementById('videoCanvas');
         var ctx = canvas.getContext('2d');
         var avatarBox = document.getElementById('avatarBox');
-        var btn = document.getElementById('play-video-btn');
-        var isCanvasTextureActive = false;
 
-        function startTeacherAvatar() {
+        // تفعيل الصوت المباشر فور لمس الشاشة لمراعاة شروط المتصفحات
+        window.addEventListener('click', enableAudio, { once: true });
+        window.addEventListener('touchstart', enableAudio, { once: true });
+
+        function enableAudio() {
+            if (video) {
+                video.muted = false;
+            }
+        }
+
+        // تشغيل برمجية إزالة الخلفية الخضراء تلقائياً
+        window.addEventListener('load', function() {
             if (!video) return;
 
-            video.muted = false;
-            video.play().then(() => {
-                btn.style.display = 'none';
-                
-                if (!isCanvasTextureActive) {
-                    isCanvasTextureActive = true;
-                    // ربط محرك الرسم باللوحة ثلاثية الأبعاد
-                    var canvasTexture = new THREE.CanvasTexture(canvas);
-                    var mesh = avatarBox.getObject3D('mesh');
-                    if (mesh) {
-                        mesh.material.map = canvasTexture;
-                        mesh.material.needsUpdate = true;
-                    }
-
-                    // تحديث رسم فريمات الفيديو بشكل متواصل
-                    function renderFrame() {
-                        if (!video.paused && !video.ended) {
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            canvasTexture.needsUpdate = true;
-                        }
-                        requestAnimationFrame(renderFrame);
-                    }
-                    renderFrame();
+            var canvasTexture = new THREE.CanvasTexture(canvas);
+            
+            // انتظار تجهيز عنصر الشاشة لتطبيق الخامة
+            var checkMesh = setInterval(function() {
+                var mesh = avatarBox.getObject3D('mesh');
+                if (mesh) {
+                    mesh.material.map = canvasTexture;
+                    mesh.material.transparent = true;
+                    mesh.material.needsUpdate = true;
+                    clearInterval(checkMesh);
                 }
+            }, 100);
+
+            function renderChromaFrame() {
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    var l = frame.data.length / 4;
+
+                    // كود الكروما كاي (تفريق وشطب اللون الأخضر)
+                    for (var i = 0; i < l; i++) {
+                        var r = frame.data[i * 4 + 0];
+                        var g = frame.data[i * 4 + 1];
+                        var b = frame.data[i * 4 + 2];
+
+                        // إذا كان اللون يميل للخضرة يتم إخفاؤه
+                        if (g > 90 && g > r * 1.25 && g > b * 1.25) {
+                            frame.data[i * 4 + 3] = 0; // إزالة الشفافية
+                        }
+                    }
+                    ctx.putImageData(frame, 0, 0);
+                    canvasTexture.needsUpdate = true;
+                }
+                requestAnimationFrame(renderChromaFrame);
+            }
+
+            video.play().then(() => {
+                renderChromaFrame();
             }).catch(err => {
-                console.log("تنبيه التشغيل:", err);
-                avatarBox.setAttribute('src', '#teacherFallback');
+                console.log("تشغيل افتراضي بدون صوت لحين لمس الشاشة:", err);
+                video.muted = true;
+                video.play();
+                renderChromaFrame();
             });
-        }
+        });
 
         function askTeacher() {
             const input = document.getElementById('user-input');
