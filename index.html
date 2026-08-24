@@ -161,8 +161,8 @@
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- أفتار المعلم (المجسم الشفاف) -->
-        <a-entity id="teacher-avatar-container" position="-4.5 2.5 -9.5">
+        <!-- أفتار المعلم (تم ضبط الموقع Y=2.1 ليكون واقفا على الأرض مباشرة) -->
+        <a-entity id="teacher-avatar-container" position="-4.5 2.1 -9.5">
             <a-plane id="avatarBox" width="2.8" height="4.2" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
             <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
@@ -196,8 +196,9 @@
             </a-entity>
         </a-entity>
 
-        <a-entity id="rig" position="0 3.5 3">
-            <a-entity id="head" camera look-controls></a-entity>
+        <!-- الكاميرا: تم تحسين الارتفاع لمستوى النظر البشري الطبيعي مباشرة تجاه الأفتار -->
+        <a-entity id="rig" position="0 1.8 3">
+            <a-entity id="head" camera look-controls position="0 0 0"></a-entity>
         </a-entity>
     </a-scene>
 
