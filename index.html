@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>فصل الفيزياء الافتراضي للاستاذ عمرحسان.عبره  - أكسيس 3D</title>
+    <title>فصل الفيزياء الافتراضي -الاستاذ عمر حسان عبره أكسيس 3D</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <style>
         .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
@@ -49,14 +49,49 @@
         .btn-send { background: #0284c7; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
         .btn-action { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; color: white; }
 
-        .control-btn { position: fixed; width: 55px; height: 55px; background: rgba(212, 175, 55, 0.9); border: 2px solid white; border-radius: 50%; z-index: 9999; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; touch-action: none; font-size: 20px; user-select: none; }
-        #up { bottom: 120px; left: 80px; } 
-        #down { bottom: 20px; left: 80px; } 
-        #left { bottom: 70px; left: 20px; } 
-        #right { bottom: 70px; left: 140px; }
+        .control-btn { 
+            position: fixed; 
+            width: 60px; 
+            height: 60px; 
+            background: rgba(212, 175, 55, 0.9); 
+            border: 2px solid white; 
+            border-radius: 50%; 
+            z-index: 9999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: bold; 
+            touch-action: manipulation; 
+            font-size: 22px; 
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #up { bottom: 135px; left: 85px; } 
+        #down { bottom: 15px; left: 85px; } 
+        #left { bottom: 75px; left: 15px; } 
+        #right { bottom: 75px; left: 155px; }
+
+        /* زر الترحيب الصوتي */
+        #audio-start-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 10000;
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
+
+    <button id="audio-start-btn" onclick="startAudioWelcome()">🔊 استماع للترحيب الصوتي</button>
 
     <div id="nav-panel">
         <button class="btn-action" style="background:#8B4513;" onclick="window.location.href='corridor.html'">🏃 العودة للممر</button>
@@ -84,7 +119,6 @@
     <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
         
         <a-assets>
-            <!-- الفيديو صامت كلياً ليتكرر بدون إزعاج -->
             <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
         </a-assets>
 
@@ -141,8 +175,8 @@
             </a-entity>
         </a-entity>
 
-        <!-- الكاميرا -->
-        <a-entity id="rig" position="0 1.6 4">
+        <!-- الكاميرا: تم رفع الارتفاع إلى 2.5 ليناظر مستوى عين الأفتار -->
+        <a-entity id="rig" position="0 2.5 3">
             <a-entity id="head" camera look-controls></a-entity>
         </a-entity>
     </a-scene>
@@ -154,21 +188,13 @@
         var avatarBox = document.getElementById('avatarBox');
         var canvasTexture = null;
         var isSetupDone = false;
-        var hasWelcomed = false;
 
         function initAvatarChroma() {
             if (isSetupDone) return;
             isSetupDone = true;
 
-            // تشغيل الفيديو بشكل صامت للتكرار الحركي فقط
             video.muted = true;
-            video.play().catch(e => console.log("خطأ بالتشغيل:", e));
-
-            // نطق الترحيب لمرة واحدة فقط عند دخول الفصل
-            if (!hasWelcomed) {
-                hasWelcomed = true;
-                speak("أهلاً بك في فصل الفيزياء الافتراضي! اسألني عن أي قانون أو مفهوم فيزيائي وسأجيبك فوراً.");
-            }
+            video.play().catch(e => console.log(e));
 
             canvasTexture = new THREE.CanvasTexture(canvas);
             var mesh = avatarBox.getObject3D('mesh');
@@ -190,7 +216,6 @@
                         var g = frame.data[i * 4 + 1];
                         var b = frame.data[i * 4 + 2];
 
-                        // تفريغ الكروما الخضراء
                         if (g > 90 && r < 140 && b < 140 && g > r * 1.1) {
                             frame.data[i * 4 + 3] = 0;
                         }
@@ -203,11 +228,17 @@
             processFrame();
         }
 
-        // بدء المشهد والترحيب بمجرد أول لمسة للشاشة
         window.addEventListener('touchstart', initAvatarChroma, {once: true});
         window.addEventListener('click', initAvatarChroma, {once: true});
 
-        // منطق أزرار التحكم بالحركة
+        // تشغيل صوت الترحيب اليدوي لكسر حظر الصوت التلقائي في المتصفح
+        function startAudioWelcome() {
+            speak("أهلاً بك في فصل الفيزياء الافتراضي! اسألني عن أي قانون أو مفهوم فيزيائي وسأجيبك فوراً.");
+            var btn = document.getElementById('audio-start-btn');
+            if(btn) btn.style.display = 'none';
+        }
+
+        // تحسين أزرار الحركة وتسريعها
         var rig = document.getElementById('rig');
         var head = document.getElementById('head');
         var keys = {up: false, down: false, left: false, right: false};
@@ -231,13 +262,13 @@
         setupBtn('left', 'left');
         setupBtn('right', 'right');
 
-        // حلقة التحديث المستمر للحركة
+        // زيادة السرعة وتقليل زمن التحديث للحركة السريعة والسلسة
         setInterval(() => {
             if (!rig || !head) return;
             var pos = rig.getAttribute('position');
             var rot = head.getAttribute('rotation');
             var ang = rot.y * Math.PI / 180;
-            var s = 0.15; // سرعة الحركة
+            var s = 0.35; // زيادة السرعة لمشي أكثر خفة
             
             let nextX = pos.x;
             let nextZ = pos.z;
@@ -247,15 +278,13 @@
             if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
             if(keys.right){ nextX += Math.cos(ang)*s; nextZ -= Math.sin(ang)*s; }
 
-            // قيود حدود الجدران
             if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
                 pos.x = nextX;
                 pos.z = nextZ;
                 rig.setAttribute('position', pos);
             }
-        }, 20);
+        }, 16);
 
-        // الدردشة والتفاعل
         function askTeacher() {
             const input = document.getElementById('user-input');
             const chatHistory = document.getElementById('chat-history');
@@ -275,7 +304,7 @@
 
                 blackboardText.setAttribute('value', response.boardText);
                 speak(response.speech);
-            }, 400);
+            }, 300);
         }
 
         function generateTeacherResponse(question) {
@@ -303,7 +332,7 @@
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ar-SA';
-                utterance.rate = 0.95;
+                utterance.rate = 1.0;
                 window.speechSynthesis.speak(utterance);
             }
         }
