@@ -3,10 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>فصل الفيزياء الافتراضي -الاستاذ عمر حسان عبره أكسيس 3D</title>
+    <title>فصل الفيزياء الافتراضي - 3D Axis</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <style>
         .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
+
+        /* شاشة بدء الصوت والتفاعل */
+        #welcome-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: sans-serif;
+        }
+        #welcome-modal button {
+            background: #D4AF37;
+            color: #000;
+            border: none;
+            padding: 14px 28px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        }
 
         #nav-panel { position: fixed; top: 10px; right: 10px; z-index: 9999; background: white; border: 2px solid #D4AF37; padding: 10px; border-radius: 10px; width: 140px; }
 
@@ -71,27 +97,16 @@
         #down { bottom: 15px; left: 85px; } 
         #left { bottom: 75px; left: 15px; } 
         #right { bottom: 75px; left: 155px; }
-
-        /* زر الترحيب الصوتي */
-        #audio-start-btn {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 10000;
-            background: #22c55e;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
     </style>
 </head>
 <body>
 
-    <button id="audio-start-btn" onclick="startAudioWelcome()">🔊 استماع للترحيب الصوتي</button>
+    <!-- نافذة التفعيل التفاعلية لحل مشكلة منع الصوت -->
+    <div id="welcome-modal">
+        <h2>مرحباً بك في فصل الفيزياء</h2>
+        <p>اضغط للبدء وتفعيل الصوت التفاعلي للمعلم</p>
+        <button onclick="startExperience()">دخول الفصل 🔔</button>
+    </div>
 
     <div id="nav-panel">
         <button class="btn-action" style="background:#8B4513;" onclick="window.location.href='corridor.html'">🏃 العودة للممر</button>
@@ -108,7 +123,6 @@
         </div>
     </div>
 
-    <!-- أزرار التحكم بالحركة -->
     <div id="up" class="control-btn">↑</div>
     <div id="down" class="control-btn">↓</div>
     <div id="left" class="control-btn">←</div>
@@ -122,17 +136,19 @@
             <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
         </a-assets>
 
-        <!-- إضاءة المشهد -->
         <a-entity light="type: ambient; color: #FFF; intensity: 3.5"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 1.8" position="-1 4 2"></a-entity>
 
-        <!-- الأرضية والجدران -->
-        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#E0F7FA" src="https://images.unsplash.com/photo-1523821741446-edb2b68bb7a0?auto=format&fit=crop&w=500&q=80" repeat="10 10" material="shader: flat;"></a-plane> 
-        
-        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FFFDD0" src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=500&q=80" repeat="1 1" material="shader: flat;"></a-box> 
-        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#FFFDD0" src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=500&q=80" repeat="1 1" material="shader: flat;"></a-box> 
-        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=500&q=80" repeat="1 1" material="shader: flat;"></a-box> 
-        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=500&q=80" repeat="1 1" material="shader: flat;"></a-box> 
+        <!-- أرضية رخامية مجسمة ومباشرة تم تلوينها برمجياً بدون روابط خارجية لتضمن الظهور دائماً -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#EAEAEA" material="shader: flat; roughness: 0.1; metalness: 0.1;"></a-plane> 
+        <!-- شبكة رخام الأرضية -->
+        <a-grid position="0 0.01 0" width="20" height="20" grid-color="#D0D0D0" color="#F5F5F5"></a-grid>
+
+        <!-- الجدران -->
+        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FAF8F5" material="shader: flat;"></a-box> 
+        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#FAF8F5" material="shader: flat;"></a-box> 
+        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#F4F1EA" material="shader: flat;"></a-box> 
+        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#F4F1EA" material="shader: flat;"></a-box> 
         
         <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#FFFFFF" material="shader: flat;"></a-box> 
 
@@ -175,9 +191,9 @@
             </a-entity>
         </a-entity>
 
-        <!-- الكاميرا: تم رفع الارتفاع إلى 2.5 ليناظر مستوى عين الأفتار -->
-        <a-entity id="rig" position="0 2.5 3">
-            <a-entity id="head" camera look-controls></a-entity>
+        <!-- الكاميرا: الكائن الخارجي ثابت على ارتفاع 2.4 والكاميرا الداخلية مثبتة بدون إعادة ضبط تلقائي -->
+        <a-entity id="rig" position="0 2.4 3">
+            <a-camera id="head" look-controls="pointerLockEnabled: false" wasd-controls="enabled: false"></a-camera>
         </a-entity>
     </a-scene>
 
@@ -187,12 +203,18 @@
         var ctx = canvas.getContext('2d');
         var avatarBox = document.getElementById('avatarBox');
         var canvasTexture = null;
-        var isSetupDone = false;
+
+        function startExperience() {
+            document.getElementById('welcome-modal').style.display = 'none';
+            
+            // تشغيل الكروما وفيديو المعلم
+            initAvatarChroma();
+
+            // نطق الترحيب بصوت نقي فور الضغط
+            speak("أهلاً بك في فصل الفيزياء الافتراضي! اسألني عن أي قانون أو مفهوم فيزيائي وسأجيبك فوراً.");
+        }
 
         function initAvatarChroma() {
-            if (isSetupDone) return;
-            isSetupDone = true;
-
             video.muted = true;
             video.play().catch(e => console.log(e));
 
@@ -207,7 +229,6 @@
             function processFrame() {
                 if (!video.paused && !video.ended) {
                     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
                     var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     var l = frame.data.length / 4;
 
@@ -228,17 +249,7 @@
             processFrame();
         }
 
-        window.addEventListener('touchstart', initAvatarChroma, {once: true});
-        window.addEventListener('click', initAvatarChroma, {once: true});
-
-        // تشغيل صوت الترحيب اليدوي لكسر حظر الصوت التلقائي في المتصفح
-        function startAudioWelcome() {
-            speak("أهلاً بك في فصل الفيزياء الافتراضي! اسألني عن أي قانون أو مفهوم فيزيائي وسأجيبك فوراً.");
-            var btn = document.getElementById('audio-start-btn');
-            if(btn) btn.style.display = 'none';
-        }
-
-        // تحسين أزرار الحركة وتسريعها
+        // تحكم الحركة السريع والمرتفع
         var rig = document.getElementById('rig');
         var head = document.getElementById('head');
         var keys = {up: false, down: false, left: false, right: false};
@@ -262,13 +273,12 @@
         setupBtn('left', 'left');
         setupBtn('right', 'right');
 
-        // زيادة السرعة وتقليل زمن التحديث للحركة السريعة والسلسة
         setInterval(() => {
             if (!rig || !head) return;
             var pos = rig.getAttribute('position');
             var rot = head.getAttribute('rotation');
             var ang = rot.y * Math.PI / 180;
-            var s = 0.35; // زيادة السرعة لمشي أكثر خفة
+            var s = 0.35;
             
             let nextX = pos.x;
             let nextZ = pos.z;
@@ -281,6 +291,8 @@
             if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
                 pos.x = nextX;
                 pos.z = nextZ;
+                // تثبيت ارتفاع الكاميرا دائماً على 2.4 لمنع الزحف
+                pos.y = 2.4;
                 rig.setAttribute('position', pos);
             }
         }, 16);
