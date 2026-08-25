@@ -35,7 +35,6 @@
             box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
         }
 
-        /* لوحة التحكم والملاحة أعلى اليسار */
         #nav-panel { 
             position: fixed; 
             top: 10px; 
@@ -47,7 +46,6 @@
             width: 130px; 
         }
 
-        /* لوحة التحكم بارتفاع الكاميرا رأساً */
         .height-controls {
             display: flex;
             gap: 5px;
@@ -58,15 +56,16 @@
             background: #d97706;
             color: white;
             border: 1px solid white;
-            padding: 5px;
+            padding: 8px 5px;
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 11px;
+            font-size: 12px;
             text-align: center;
+            touch-action: manipulation;
+            user-select: none;
         }
 
-        /* لوحة المحادثة رأسية أسفل اليمين */
         #chat-panel {
             position: fixed;
             bottom: 10px;
@@ -143,17 +142,15 @@
         <button onclick="startClassroom()">دخول الفصل 🚪</button>
     </div>
 
-    <!-- لوحة الملاحة وأزرار رفع وخفض الكاميرا -->
     <div id="nav-panel">
         <div class="height-controls">
-            <button class="btn-height" onclick="changeCameraHeight(0.3)">▲ أعلى</button>
-            <button class="btn-height" onclick="changeCameraHeight(-0.3)">▼ أسفل</button>
+            <button class="btn-height" id="btn-up-cam">▲ أعلى</button>
+            <button class="btn-height" id="btn-down-cam">▼ أسفل</button>
         </div>
         <button class="btn-action" style="background:#0284c7;" onclick="replayWelcome()">🔊 إعادة الترحيب</button>
         <button class="btn-action" style="background:#8B4513;" onclick="window.location.href='corridor.html'">🏃 العودة للممر</button>
     </div>
 
-    <!-- لوحة المحادثة الرأسية -->
     <div id="chat-panel">
         <h3>👨‍🏫 معلم الفيزياء</h3>
         <div id="chat-history">
@@ -179,14 +176,14 @@
         
         <a-assets>
             <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-            <img id="marbleTile" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" crossorigin="anonymous">
         </a-assets>
 
-        <a-entity light="type: ambient; color: #FFF; intensity: 3.0"></a-entity>
-        <a-entity light="type: directional; color: #FFF; intensity: 1.5" position="-1 5 2"></a-entity>
+        <a-entity light="type: ambient; color: #FFF; intensity: 2.5"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 1.2" position="-1 5 2"></a-entity>
 
-        <!-- أرضية الرخام التأكيد على وجودها وإظهارها -->
-        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" src="#marbleTile" repeat="8 8" material="shader: flat; roughness: 0.2;"></a-plane> 
+        <!-- أرضية رخامية مضمونة الظهور ومقسمة بشكل فاخر -->
+        <a-grid position="0 0 0" width="20" height="20" static-body material="color: #E2E8F0; shader: flat;"></a-grid>
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#CBD5E1" material="shader: flat; roughness: 0.1;"></a-plane> 
         
         <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
         <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
@@ -204,10 +201,10 @@
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- تعديل مكان الأفتار ليكون مستقراً على الأرضية تماماً عند Y=1.35 -->
+        <!-- ضبط الأفتار ليكون مستقراً تماماً على مستوى بلاط الأرضية Y=1.35 بأبعاد متناسبة -->
         <a-entity id="teacher-avatar-container" position="-4.5 1.35 -9.5">
-            <a-plane id="avatarBox" width="2.4" height="2.7" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
-            <a-text value="Physics Teacher AI" position="0 1.6 0" align="center" width="5" color="#D4AF37"></a-text>
+            <a-plane id="avatarBox" width="1.8" height="2.7" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
+            <a-text value="Physics Teacher AI" position="0 1.5 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
 
         <a-entity id="chairs-matrix">
@@ -238,8 +235,8 @@
             </a-entity>
         </a-entity>
 
-        <!-- الكاميرا: رفع المستوى الافتراضي إلى Y=3.2 لمناظرة عيون الأفتار بشكل ممتاز -->
-        <a-entity id="rig" position="0 3.2 4">
+        <!-- الكاميرا بارتفاع نظير لطول الإنسان الطبيعي Y=2.2 -->
+        <a-entity id="rig" position="0 2.2 4">
             <a-entity id="head" camera look-controls="pointerLockEnabled: false" rotation="0 0 0"></a-entity>
         </a-entity>
     </a-scene>
@@ -299,17 +296,27 @@
             }
         }
 
-        /* دالة التغيير الديناميكي لارتفاع الكاميرا */
+        // برمجة أزرار الكاميرا للعمل الفوري على الهاتف والكمبيوتر
         function changeCameraHeight(delta) {
             var rig = document.getElementById('rig');
             if (!rig) return;
             var pos = rig.getAttribute('position');
             var newY = pos.y + delta;
-            if (newY >= 1.0 && newY <= 6.0) { // حدود الارتفاع المسموح بها
+            if (newY >= 1.0 && newY <= 6.0) {
                 pos.y = newY;
                 rig.setAttribute('position', pos);
             }
         }
+
+        function bindCamBtn(id, delta) {
+            var btn = document.getElementById(id);
+            if (!btn) return;
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); changeCameraHeight(delta); }, {passive: false});
+            btn.addEventListener('click', (e) => { e.preventDefault(); changeCameraHeight(delta); });
+        }
+
+        bindCamBtn('btn-up-cam', 0.4);
+        bindCamBtn('btn-down-cam', -0.4);
 
         function replayWelcome() {
             speak(welcomeSpeech);
