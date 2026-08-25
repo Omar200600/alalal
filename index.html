@@ -35,7 +35,7 @@
             box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
         }
 
-        /* لوحة التحكم والملاحة أعلى اليسار لعدم التغطية على الواجهة */
+        /* لوحة التحكم والملاحة أعلى اليسار */
         #nav-panel { 
             position: fixed; 
             top: 10px; 
@@ -44,15 +44,34 @@
             display: flex;
             flex-direction: column;
             gap: 5px;
-            width: 120px; 
+            width: 130px; 
         }
 
-        /* لوحة المحادثة - تصميم رأسي وموفر للمساحة أسفل اليمين */
+        /* لوحة التحكم بارتفاع الكاميرا رأساً */
+        .height-controls {
+            display: flex;
+            gap: 5px;
+            justify-content: space-between;
+        }
+        .btn-height {
+            flex: 1;
+            background: #d97706;
+            color: white;
+            border: 1px solid white;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        /* لوحة المحادثة رأسية أسفل اليمين */
         #chat-panel {
             position: fixed;
             bottom: 10px;
             right: 10px;
-            width: 200px; /* تصميم رأسي نحيف */
+            width: 200px;
             background: rgba(15, 23, 42, 0.92);
             border: 2px solid #D4AF37;
             border-radius: 10px;
@@ -124,13 +143,17 @@
         <button onclick="startClassroom()">دخول الفصل 🚪</button>
     </div>
 
-    <!-- أزرار الملاحة أعلى اليسار لتفادي التداخل -->
+    <!-- لوحة الملاحة وأزرار رفع وخفض الكاميرا -->
     <div id="nav-panel">
+        <div class="height-controls">
+            <button class="btn-height" onclick="changeCameraHeight(0.3)">▲ أعلى</button>
+            <button class="btn-height" onclick="changeCameraHeight(-0.3)">▼ أسفل</button>
+        </div>
         <button class="btn-action" style="background:#0284c7;" onclick="replayWelcome()">🔊 إعادة الترحيب</button>
         <button class="btn-action" style="background:#8B4513;" onclick="window.location.href='corridor.html'">🏃 العودة للممر</button>
     </div>
 
-    <!-- لوحة المحادثة رأسية ونحيفة أسفل اليمين -->
+    <!-- لوحة المحادثة الرأسية -->
     <div id="chat-panel">
         <h3>👨‍🏫 معلم الفيزياء</h3>
         <div id="chat-history">
@@ -162,6 +185,7 @@
         <a-entity light="type: ambient; color: #FFF; intensity: 3.0"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 1.5" position="-1 5 2"></a-entity>
 
+        <!-- أرضية الرخام التأكيد على وجودها وإظهارها -->
         <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" src="#marbleTile" repeat="8 8" material="shader: flat; roughness: 0.2;"></a-plane> 
         
         <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
@@ -180,9 +204,10 @@
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <a-entity id="teacher-avatar-container" position="-4.5 1.8 -9.5">
-            <a-plane id="avatarBox" width="2.4" height="3.6" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
-            <a-text value="Physics Teacher AI" position="0 2.0 0" align="center" width="5" color="#D4AF37"></a-text>
+        <!-- تعديل مكان الأفتار ليكون مستقراً على الأرضية تماماً عند Y=1.35 -->
+        <a-entity id="teacher-avatar-container" position="-4.5 1.35 -9.5">
+            <a-plane id="avatarBox" width="2.4" height="2.7" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
+            <a-text value="Physics Teacher AI" position="0 1.6 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
 
         <a-entity id="chairs-matrix">
@@ -213,7 +238,8 @@
             </a-entity>
         </a-entity>
 
-        <a-entity id="rig" position="0 2.4 4">
+        <!-- الكاميرا: رفع المستوى الافتراضي إلى Y=3.2 لمناظرة عيون الأفتار بشكل ممتاز -->
+        <a-entity id="rig" position="0 3.2 4">
             <a-entity id="head" camera look-controls="pointerLockEnabled: false" rotation="0 0 0"></a-entity>
         </a-entity>
     </a-scene>
@@ -270,6 +296,18 @@
                 mesh.material.transparent = true;
                 mesh.material.opacity = 1;
                 mesh.material.needsUpdate = true;
+            }
+        }
+
+        /* دالة التغيير الديناميكي لارتفاع الكاميرا */
+        function changeCameraHeight(delta) {
+            var rig = document.getElementById('rig');
+            if (!rig) return;
+            var pos = rig.getAttribute('position');
+            var newY = pos.y + delta;
+            if (newY >= 1.0 && newY <= 6.0) { // حدود الارتفاع المسموح بها
+                pos.y = newY;
+                rig.setAttribute('position', pos);
             }
         }
 
