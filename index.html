@@ -39,66 +39,66 @@
 
         #chat-panel {
             position: fixed;
-            bottom: 20px;
+            bottom: 10px;
             right: 10px;
-            width: 300px;
+            width: 290px;
             background: rgba(15, 23, 42, 0.95);
             border: 2px solid #D4AF37;
             border-radius: 12px;
-            padding: 12px;
+            padding: 10px;
             color: #fff;
             font-family: sans-serif;
             z-index: 9999;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
-        #chat-panel h3 { margin: 0 0 8px 0; font-size: 14px; color: #38bdf8; text-align: center; }
+        #chat-panel h3 { margin: 0 0 6px 0; font-size: 13px; color: #38bdf8; text-align: center; }
         #chat-history {
-            height: 110px;
+            height: 90px;
             overflow-y: auto;
             background: rgba(0,0,0,0.4);
-            padding: 8px;
+            padding: 6px;
             border-radius: 6px;
-            font-size: 12px;
-            margin-bottom: 8px;
+            font-size: 11px;
+            margin-bottom: 6px;
             border: 1px solid rgba(255,255,255,0.1);
         }
         .input-box { display: flex; gap: 5px; align-items: center; }
         input[type="text"] {
             flex: 1;
-            padding: 8px 10px;
+            padding: 6px 8px;
             border-radius: 6px;
             border: 1px solid #334155;
             background: #0f172a;
             color: #fff;
             outline: none;
-            font-size: 12px;
+            font-size: 11px;
         }
-        .btn-send { background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .btn-mic { background: #e11d48; color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .btn-action { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; color: white; }
+        .btn-send { background: #0284c7; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        .btn-mic { background: #e11d48; color: white; border: none; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        .btn-action { width: 100%; padding: 6px; margin-top: 4px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; color: white; font-size: 12px; }
 
         .control-btn { 
             position: fixed; 
-            width: 60px; 
-            height: 60px; 
+            width: 50px; 
+            height: 50px; 
             background: rgba(212, 175, 55, 0.9); 
             border: 2px solid white; 
             border-radius: 50%; 
-            z-index: 9999; 
+            z-index: 10000; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             color: white; 
             font-weight: bold; 
             touch-action: manipulation; 
-            font-size: 22px; 
+            font-size: 18px; 
             user-select: none;
             -webkit-user-select: none;
         }
-        #up { bottom: 135px; left: 85px; } 
-        #down { bottom: 15px; left: 85px; } 
-        #left { bottom: 75px; left: 15px; } 
-        #right { bottom: 75px; left: 155px; }
+        #up { bottom: 115px; left: 65px; } 
+        #down { bottom: 15px; left: 65px; } 
+        #left { bottom: 65px; left: 10px; } 
+        #right { bottom: 65px; left: 120px; }
     </style>
 </head>
 <body>
@@ -161,13 +161,13 @@
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- أفتار المعلم (تم ضبط الموقع Y=2.1 ليكون واقفا على الأرض مباشرة) -->
-        <a-entity id="teacher-avatar-container" position="-4.5 2.1 -9.5">
-            <a-plane id="avatarBox" width="2.8" height="4.2" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
-            <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
+        <!-- أفتار المعلم ملامس للأرضية Y=1.8 بارتفاع طبيعي -->
+        <a-entity id="teacher-avatar-container" position="-4.5 1.8 -9.5">
+            <a-plane id="avatarBox" width="2.4" height="3.6" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
+            <a-text value="Physics Teacher AI" position="0 2.0 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
 
-        <!-- الكراسي الحجم الجديد والممر الواسع -->
+        <!-- الكراسي -->
         <a-entity id="chairs-matrix">
             <a-entity position="-5 0 -2" rotation="0 180 0">
                 <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
@@ -196,9 +196,9 @@
             </a-entity>
         </a-entity>
 
-        <!-- الكاميرا: تم تحسين الارتفاع لمستوى النظر البشري الطبيعي مباشرة تجاه الأفتار -->
-        <a-entity id="rig" position="0 1.8 3">
-            <a-entity id="head" camera look-controls position="0 0 0"></a-entity>
+        <!-- الكاميرا: رفع المستوى إلى Y=2.4 لضمان زاوية رؤية مستقيمة كلياً ودون ميلان -->
+        <a-entity id="rig" position="0 2.4 4">
+            <a-entity id="head" camera look-controls="pointerLockEnabled: false" rotation="0 0 0"></a-entity>
         </a-entity>
     </a-scene>
 
@@ -297,7 +297,7 @@
             if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
             if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
             if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
-            if(keys.right){ nextX += Math.cos(ang)*s; nextZ -= Math.sin(ang)*s; }
+            if(keys.right){ nextX += Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
 
             if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
                 pos.x = nextX;
