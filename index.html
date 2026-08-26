@@ -19,7 +19,7 @@
         :root {
             --primary: #1e3a8a;
             --accent: #0284c7;
-            --bg-glass: rgba(15, 23, 42, 0.88);
+            --bg-glass: rgba(15, 23, 42, 0.92);
             --border-gold: #D4AF37;
         }
 
@@ -31,18 +31,19 @@
             user-select: none;
         }
 
+        /* Smart Chat Window */
         #smart-chat-container {
             position: fixed;
             bottom: 12px;
             right: 12px;
-            width: 330px;
+            width: 340px;
             max-width: calc(100vw - 24px);
             background: var(--bg-glass);
-            border: 1.5px solid var(--border-gold);
+            border: 2px solid var(--border-gold);
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            z-index: 99999;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 999999 !important;
             color: #ffffff;
             display: flex;
             flex-direction: column;
@@ -50,7 +51,7 @@
         }
 
         .chat-header {
-            background: rgba(30, 58, 138, 0.9);
+            background: rgba(30, 58, 138, 0.95);
             padding: 10px 14px;
             display: flex;
             justify-content: space-between;
@@ -60,6 +61,7 @@
         .chat-header h3 { margin: 0; font-size: 0.9rem; color: #38bdf8; }
         .chat-header .badge { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; color: #f1f5f9; }
 
+        /* Setup Screen */
         .setup-screen {
             padding: 14px;
             display: flex;
@@ -77,10 +79,11 @@
             border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem; margin-top: 5px;
         }
 
+        /* Active Chat Screen */
         .chat-body { display: none; flex-direction: column; height: 300px; }
         .chat-messages {
             flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column;
-            gap: 8px; background: rgba(0, 0, 0, 0.25); font-size: 0.82rem;
+            gap: 8px; background: rgba(0, 0, 0, 0.3); font-size: 0.82rem;
         }
 
         .message { max-width: 85%; padding: 8px 12px; border-radius: 10px; line-height: 1.4; word-break: break-word; }
@@ -98,14 +101,15 @@
         .btn-mic { background: #e11d48; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
         .btn-send { background: var(--accent); color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
 
-        #nav-panel { position: fixed; top: 10px; left: 10px; z-index: 9999; display: flex; flex-direction: column; gap: 5px; width: 120px; }
+        /* Navigation Controls */
+        #nav-panel { position: fixed; top: 10px; left: 10px; z-index: 999999 !important; display: flex; flex-direction: column; gap: 5px; width: 120px; }
         .height-controls { display: flex; gap: 4px; }
         .btn-height { flex: 1; background: #d97706; color: white; border: 1px solid white; padding: 6px 2px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 11px; text-align: center; }
 
         .control-btn { 
-            position: fixed; width: 42px; height: 42px; background: rgba(212, 175, 55, 0.85); border: 1.5px solid white; 
-            border-radius: 50%; z-index: 10000; display: flex; align-items: center; justify-content: center; 
-            color: white; font-weight: bold; font-size: 15px; user-select: none;
+            position: fixed; width: 44px; height: 44px; background: rgba(212, 175, 55, 0.9); border: 1.5px solid white; 
+            border-radius: 50%; z-index: 999999 !important; display: flex; align-items: center; justify-content: center; 
+            color: white; font-weight: bold; font-size: 16px; user-select: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         #up { bottom: 95px; left: 50px; } 
         #down { bottom: 15px; left: 50px; } 
@@ -136,11 +140,11 @@
         <div id="setup-screen" class="setup-screen">
             <div>
                 <label>اسم الطالب:</label>
-                <input type="text" id="student-name" value="طالب جديد" placeholder="أدخل اسمك الكريم...">
+                <input type="text" id="student-name" placeholder="أدخل اسمك الكريم...">
             </div>
             <div>
                 <label>المؤسسة / المرحلة:</label>
-                <select id="stage-select" onchange="updateSubOptions()">
+                <select id="stage-select">
                     <option value="school">المدرسة (المنهج اليمني)</option>
                     <option value="university">الجامعة / الكلية</option>
                 </select>
@@ -153,15 +157,15 @@
                     <option value="الثالث الثانوي">الثالث الثانوي</option>
                 </select>
             </div>
-            <button type="button" class="btn-main" id="enter-btn" onclick="startSession()">دخول القاعة الافتراضية 🚀</button>
+            <button type="button" class="btn-main" id="enter-btn">دخول القاعة الافتراضية 🚀</button>
         </div>
 
         <div id="chat-body" class="chat-body">
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="اسأل أو اضغط الميكروفون..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button class="btn-mic" id="mic-btn" onclick="startVoiceInput()" title="تحدث بصوتك">🎙️</button>
-                <button class="btn-send" onclick="sendMessage()">إرسال</button>
+                <input type="text" id="user-input" placeholder="اسأل أو اضغط الميكروفون...">
+                <button class="btn-mic" id="mic-btn" title="تحدث بصوتك">🎙️</button>
+                <button class="btn-send" id="send-btn">إرسال</button>
             </div>
         </div>
     </div>
@@ -201,10 +205,10 @@
     </a-scene>
 
     <script>
-        // ضع مفتاحك الشخصي الجديد بين العلامتين "" مع الحفاظ على علامات التنصيص
+        // ضع مفتاحك الشخصي هنا بين علامتي التنصيص
         const GEMINI_API_KEY = "curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent" \
   -H 'Content-Type: application/json' \
-  -H 'X-goog-api-key: AQ.Ab8RN6LTBmqqgL1qExdP3xvMsK2qO51QiRf8ttDE_5DkWIpvPg' \
+  -H 'X-goog-api-key: AQ.Ab8RN6IEXIoS515GsvPDZ2oCQ3jB9NdAw_4u_Ebe2msfvDP5QQ' \
   -X POST \
   -d '{
     "contents": [
@@ -218,269 +222,223 @@
     ]
   }'";
 
-        let state = { studentName: "", stage: "", subOption: "" };
+        document.addEventListener('DOMContentLoaded', () => {
+            let state = { studentName: "", stage: "", subOption: "" };
 
-        function updateSubOptions() {
-            const stage = document.getElementById("stage-select").value;
+            const stageSelect = document.getElementById("stage-select");
             const subLabel = document.getElementById("sub-label");
             const subSelect = document.getElementById("sub-select");
+            const enterBtn = document.getElementById("enter-btn");
+            const sendBtn = document.getElementById("send-btn");
+            const micBtn = document.getElementById("mic-btn");
+            const userInput = document.getElementById("user-input");
 
-            if (stage === "school") {
-                subLabel.innerText = "الصف الدراسي:";
-                subSelect.innerHTML = `
-                    <option value="الأول الثانوي">الأول الثانوي</option>
-                    <option value="الثاني الثانوي" selected>الثاني الثانوي</option>
-                    <option value="الثالث الثانوي">الثالث الثانوي</option>
-                `;
-            } else {
-                subLabel.innerText = "التخصص الجامعي / القسم:";
-                subSelect.innerHTML = `
-                    <option value="قسم الفيزياء">قسم الفيزياء</option>
-                    <option value="كلية الهندسة">كلية الهندسة</option>
-                    <option value="كلية الحاسبات والذكاء الاصطناعي">كلية الحاسبات والذكاء الاصطناعي</option>
-                    <option value="قسم الكيمياء">قسم الكيمياء</option>
-                `;
-            }
-        }
+            stageSelect.addEventListener('change', () => {
+                if (stageSelect.value === "school") {
+                    subLabel.innerText = "الصف الدراسي:";
+                    subSelect.innerHTML = `
+                        <option value="الأول الثانوي">الأول الثانوي</option>
+                        <option value="الثاني الثانوي" selected>الثاني الثانوي</option>
+                        <option value="الثالث الثانوي">الثالث الثانوي</option>
+                    `;
+                } else {
+                    subLabel.innerText = "التخصص الجامعي / القسم:";
+                    subSelect.innerHTML = `
+                        <option value="قسم الفيزياء">قسم الفيزياء</option>
+                        <option value="كلية الهندسة">كلية الهندسة</option>
+                        <option value="كلية الحاسبات والذكاء الاصطناعي">كلية الحاسبات والذكاء الاصطناعي</option>
+                        <option value="قسم الكيمياء">قسم الكيمياء</option>
+                    `;
+                }
+            });
 
-        function startSession() {
-            try {
-                let nameInput = document.getElementById("student-name").value.trim();
-                const stageInput = document.getElementById("stage-select").value;
-                const subInput = document.getElementById("sub-select").value;
+            enterBtn.addEventListener('click', () => {
+                const nameVal = document.getElementById("student-name").value.trim();
+                if (!nameVal) {
+                    alert("يرجى إدخال اسم الطالب أولاً.");
+                    return;
+                }
 
-                if (!nameInput) nameInput = "زائر";
+                state.studentName = nameVal;
+                state.stage = stageSelect.value;
+                state.subOption = subSelect.value;
 
-                state.studentName = nameInput;
-                state.stage = stageInput;
-                state.subOption = subInput;
-
-                document.getElementById("grade-badge-display").innerText = subInput;
+                document.getElementById("grade-badge-display").innerText = state.subOption;
                 document.getElementById("setup-screen").style.display = "none";
                 document.getElementById("chat-body").style.display = "flex";
 
                 const initialMsg = `أهلاً بك يا **${state.studentName}** في (${state.subOption})! أنا المساعد الافتراضي للأستاذ **عمر حسان**.\n\nأنا جاهز لمساعدتك وإجابة جميع استفساراتك العلميّة والأكاديمية!`;
                 appendMessage("bot", initialMsg);
-                
+
                 startAvatarVideo();
-            } catch (err) {
-                // إجبار النظام على الدخول في حال حدوث أي خطأ جانبي
-                document.getElementById("setup-screen").style.display = "none";
-                document.getElementById("chat-body").style.display = "flex";
-            }
-        }
-
-        function appendMessage(sender, text) {
-            const container = document.getElementById("chat-messages");
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `message ${sender}`;
-            msgDiv.innerHTML = text.replace(/\n/g, "<br>");
-            container.appendChild(msgDiv);
-
-            if (typeof renderMathInElement === "function") {
-                renderMathInElement(msgDiv, {
-                    delimiters: [
-                        {left: '$$', right: '$$', display: true},
-                        {left: '$', right: '$', display: false}
-                    ],
-                    throwOnError: false
-                });
-            }
-
-            container.scrollTop = container.scrollHeight;
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById("user-input");
-            const text = input.value.trim();
-            if (!text) return;
-
-            appendMessage("user", text);
-            input.value = "";
-
-            appendMessage("bot", "<i id='loading'>جاري إعداد الإجابة...</i>");
-
-            try {
-                const response = await fetchGeminiApi(text);
-                const loadingElem = document.getElementById('loading');
-                if (loadingElem) loadingElem.parentElement.remove();
-
-                appendMessage("bot", response);
-                speak(response.replace(/[\$\*\#]/g, ''));
-            } catch (err) {
-                const loadingElem = document.getElementById('loading');
-                if (loadingElem) loadingElem.parentElement.remove();
-                
-                appendMessage("bot", `<b>تنبيه:</b> ${err.message}`);
-            }
-        }
-
-        function startVoiceInput() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("متصفحك لا يدعم التعرف الصوتي المباشر، يمكنك استخدام الكتابة.");
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA';
-            const micBtn = document.getElementById('mic-btn');
-            micBtn.style.background = '#22c55e';
-
-            recognition.onresult = function(event) {
-                const text = event.results[0][0].transcript;
-                document.getElementById('user-input').value = text;
-                micBtn.style.background = '#e11d48';
-                sendMessage();
-            };
-
-            recognition.onerror = function() { micBtn.style.background = '#e11d48'; };
-            recognition.onend = function() { micBtn.style.background = '#e11d48'; };
-
-            recognition.start();
-        }
-
-        async function fetchGeminiApi(userMessage) {
-            const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان.
-تتحدث مع الطالب (${state.studentName}) في (${state.subOption}).
-القواعد:
-1. اشرح المفاهيم العلمية والأكاديمية بدقة ووضوح وبأسلوب تربوي يناسب المستوى الدراسي المحدد.
-2. نسّق القوانين والمعادلات بفرمتة KaTeX مثل $F = m \\cdot a$.
-3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان.`;
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-            const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: [{ parts: [{ text: userMessage }] }]
-                })
             });
 
-            const data = await res.json();
-            if (data.error) {
-                throw new Error(data.error.message || "حدث خطأ في الاتصال بالخدمة.");
-            }
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+            micBtn.addEventListener('click', startVoiceInput);
 
-            return data.candidates[0].content.parts[0].text;
-        }
+            function appendMessage(sender, text) {
+                const container = document.getElementById("chat-messages");
+                const msgDiv = document.createElement("div");
+                msgDiv.className = `message ${sender}`;
+                msgDiv.innerHTML = text.replace(/\n/g, "<br>");
+                container.appendChild(msgDiv);
 
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA';
-                utterance.rate = 0.95;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        var video = document.getElementById('teacherVideo');
-        var canvas = document.getElementById('videoCanvas');
-        var ctx = canvas.getContext('2d');
-        var avatarBox = document.getElementById('avatarBox');
-        var canvasTexture = null;
-
-        function startAvatarVideo() {
-            video.muted = true;
-            video.play().then(() => {
-                canvasTexture = new THREE.CanvasTexture(canvas);
-                var mesh = avatarBox.getObject3D('mesh');
-                if (mesh) {
-                    mesh.material.map = canvasTexture;
-                    mesh.material.transparent = true;
-                    mesh.material.opacity = 1;
-                    mesh.material.needsUpdate = true;
+                if (typeof renderMathInElement === "function") {
+                    renderMathInElement(msgDiv, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ],
+                        throwOnError: false
+                    });
                 }
-            }).catch(e => console.log(e));
+                container.scrollTop = container.scrollHeight;
+            }
 
-            function processFrame() {
-                if (!video.paused && !video.ended && video.readyState >= 2) {
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    var l = frame.data.length / 4;
+            async function sendMessage() {
+                const text = userInput.value.trim();
+                if (!text) return;
 
-                    for (var i = 0; i < l; i++) {
-                        var r = frame.data[i * 4 + 0];
-                        var g = frame.data[i * 4 + 1];
-                        var b = frame.data[i * 4 + 2];
+                appendMessage("user", text);
+                userInput.value = "";
+                appendMessage("bot", "<i id='loading'>جاري إعداد الإجابة...</i>");
 
-                        if (g > 90 && r < 140 && b < 140 && g > r * 1.1) {
-                            frame.data[i * 4 + 3] = 0;
-                        }
+                try {
+                    const response = await fetchGeminiApi(text);
+                    const loadingElem = document.getElementById('loading');
+                    if (loadingElem) loadingElem.parentElement.remove();
+
+                    appendMessage("bot", response);
+                    speak(response.replace(/[\$\*\#]/g, ''));
+                } catch (err) {
+                    const loadingElem = document.getElementById('loading');
+                    if (loadingElem) loadingElem.parentElement.remove();
+                    appendMessage("bot", `<b>تنبيه:</b> ${err.message}`);
+                }
+            }
+
+            async function fetchGeminiApi(userMessage) {
+                const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان. تتحدث مع الطالب (${state.studentName}) في (${state.subOption}).
+1. اشرح المفاهيم العلمية والأكاديمية بدقة ووضوح.
+2. نسّق القوانين بفرمتة KaTeX مثل $F = m \\cdot a$.`;
+
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        system_instruction: { parts: [{ text: systemPrompt }] },
+                        contents: [{ parts: [{ text: userMessage }] }]
+                    })
+                });
+
+                const data = await res.json();
+                if (data.error) throw new Error(data.error.message || "خطأ في الاتصال بالخدمة.");
+                return data.candidates[0].content.parts[0].text;
+            }
+
+            function startVoiceInput() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) return alert("متصفحك لا يدعم التعرف الصوتي.");
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'ar-SA';
+                micBtn.style.background = '#22c55e';
+                recognition.onresult = (e) => {
+                    userInput.value = e.results[0][0].transcript;
+                    micBtn.style.background = '#e11d48';
+                    sendMessage();
+                };
+                recognition.onerror = () => { micBtn.style.background = '#e11d48'; };
+                recognition.onend = () => { micBtn.style.background = '#e11d48'; };
+                recognition.start();
+            }
+
+            function speak(text) {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'ar-SA';
+                    utterance.rate = 0.95;
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+
+            var video = document.getElementById('teacherVideo');
+            var canvas = document.getElementById('videoCanvas');
+            var ctx = canvas.getContext('2d');
+            var avatarBox = document.getElementById('avatarBox');
+            var canvasTexture = null;
+
+            function startAvatarVideo() {
+                video.muted = true;
+                video.play().then(() => {
+                    canvasTexture = new THREE.CanvasTexture(canvas);
+                    var mesh = avatarBox.getObject3D('mesh');
+                    if (mesh) {
+                        mesh.material.map = canvasTexture;
+                        mesh.material.transparent = true;
+                        mesh.material.opacity = 1;
+                        mesh.material.needsUpdate = true;
                     }
-                    ctx.putImageData(frame, 0, 0);
-                    if (canvasTexture) canvasTexture.needsUpdate = true;
+                }).catch(e => console.log(e));
+
+                function processFrame() {
+                    if (!video.paused && !video.ended && video.readyState >= 2) {
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        var l = frame.data.length / 4;
+                        for (var i = 0; i < l; i++) {
+                            var r = frame.data[i * 4 + 0], g = frame.data[i * 4 + 1], b = frame.data[i * 4 + 2];
+                            if (g > 90 && r < 140 && b < 140 && g > r * 1.1) frame.data[i * 4 + 3] = 0;
+                        }
+                        ctx.putImageData(frame, 0, 0);
+                        if (canvasTexture) canvasTexture.needsUpdate = true;
+                    }
+                    requestAnimationFrame(processFrame);
                 }
-                requestAnimationFrame(processFrame);
+                processFrame();
             }
-            processFrame();
-        }
 
-        function changeCameraHeight(delta) {
+            // حركة الكاميرا والأزرار
             var rig = document.getElementById('rig');
-            if (!rig) return;
-            var pos = rig.getAttribute('position');
-            var newY = pos.y + delta;
-            if (newY >= 1.0 && newY <= 6.0) {
-                pos.y = newY;
-                rig.setAttribute('position', pos);
+            var head = document.getElementById('head');
+            var keys = {up: false, down: false, left: false, right: false};
+
+            function setupBtn(id, k) {
+                var b = document.getElementById(id);
+                if (!b) return;
+                var start = (e) => { e.preventDefault(); keys[k] = true; };
+                var end = (e) => { e.preventDefault(); keys[k] = false; };
+                b.addEventListener('touchstart', start, {passive: false});
+                b.addEventListener('touchend', end, {passive: false});
+                b.addEventListener('mousedown', start);
+                b.addEventListener('mouseup', end);
+                b.addEventListener('mouseleave', end);
             }
-        }
 
-        function bindCamBtn(id, delta) {
-            var btn = document.getElementById(id);
-            if (!btn) return;
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); changeCameraHeight(delta); }, {passive: false});
-            btn.addEventListener('click', (e) => { e.preventDefault(); changeCameraHeight(delta); });
-        }
+            setupBtn('up', 'up'); setupBtn('down', 'down');
+            setupBtn('left', 'left'); setupBtn('right', 'right');
 
-        bindCamBtn('btn-up-cam', 0.4);
-        bindCamBtn('btn-down-cam', -0.4);
+            setInterval(() => {
+                if (!rig || !head) return;
+                var pos = rig.getAttribute('position');
+                var rot = head.getAttribute('rotation');
+                var ang = rot.y * Math.PI / 180;
+                var s = 0.35;
+                let nextX = pos.x, nextZ = pos.z;
+                if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
+                if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
+                if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
+                if(keys.right){ nextX += Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
 
-        var rig = document.getElementById('rig');
-        var head = document.getElementById('head');
-        var keys = {up: false, down: false, left: false, right: false};
-
-        function setupBtn(id, k) {
-            var b = document.getElementById(id);
-            if (!b) return;
-
-            var start = (e) => { e.preventDefault(); keys[k] = true; };
-            var end = (e) => { e.preventDefault(); keys[k] = false; };
-
-            b.addEventListener('touchstart', start, {passive: false});
-            b.addEventListener('touchend', end, {passive: false});
-            b.addEventListener('mousedown', start);
-            b.addEventListener('mouseup', end);
-            b.addEventListener('mouseleave', end);
-        }
-
-        setupBtn('up', 'up'); setupBtn('down', 'down');
-        setupBtn('left', 'left'); setupBtn('right', 'right');
-
-        setInterval(() => {
-            if (!rig || !head) return;
-            var pos = rig.getAttribute('position');
-            var rot = head.getAttribute('rotation');
-            var ang = rot.y * Math.PI / 180;
-            var s = 0.35;
-            
-            let nextX = pos.x;
-            let nextZ = pos.z;
-
-            if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
-            if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
-            if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
-            if(keys.right){ nextX += Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
-
-            if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
-                pos.x = nextX; pos.z = nextZ;
-                rig.setAttribute('position', pos);
-            }
-        }, 16);
+                if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
+                    pos.x = nextX; pos.z = nextZ;
+                    rig.setAttribute('position', pos);
+                }
+            }, 16);
+        });
     </script>
 </body>
 </html>
