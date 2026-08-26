@@ -1,470 +1,487 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>المنصة التعليمية الافتراضية - الأستاذ عمر حسان</title>
-    
-    <!-- A-Frame 3D Engine -->
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>المنصة التعليمية الافتراضية - الأستاذ عمر حسان</title>
+    
+    <!-- A-Frame 3D Engine -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
-    <!-- KaTeX Math Expressions Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- KaTeX Math Expressions Rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
-    <style>
-        .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
+    <style>
+        .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
 
-        :root {
-            --primary: #1e3a8a;
-            --accent: #0284c7;
-            --bg-glass: rgba(15, 23, 42, 0.88);
-            --border-gold: #D4AF37;
-        }
+        :root {
+            --primary: #1e3a8a;
+            --accent: #0284c7;
+            --bg-glass: rgba(15, 23, 42, 0.88);
+            --border-gold: #D4AF37;
+        }
 
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            user-select: none;
-        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
 
-        /* Smart Chat Window */
-        #smart-chat-container {
-            position: fixed;
-            bottom: 12px;
-            right: 12px;
-            width: 330px;
-            max-width: calc(100vw - 24px);
-            background: var(--bg-glass);
-            border: 1.5px solid var(--border-gold);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            z-index: 99999;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+        #smart-chat-container {
+            position: fixed;
+            bottom: 12px;
+            right: 12px;
+            width: 330px;
+            max-width: calc(100vw - 24px);
+            background: var(--bg-glass);
+            border: 1.5px solid var(--border-gold);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-        .chat-header {
-            background: rgba(30, 58, 138, 0.9);
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .chat-header h3 { margin: 0; font-size: 0.9rem; color: #38bdf8; }
-        .chat-header .badge { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; color: #f1f5f9; }
+        .chat-header {
+            background: rgba(30, 58, 138, 0.9);
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chat-header h3 { margin: 0; font-size: 0.9rem; color: #38bdf8; }
+        .chat-header .badge { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; color: #f1f5f9; }
 
-        /* Setup Screen */
-        .setup-screen {
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .setup-screen label { font-size: 0.8rem; font-weight: bold; color: #cbd5e1; }
-        .setup-screen input, .setup-screen select {
-            width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #334155;
-            background: #0f172a; color: #fff; font-size: 0.85rem; box-sizing: border-box; outline: none;
-        }
+        .setup-screen {
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .setup-screen label { font-size: 0.8rem; font-weight: bold; color: #cbd5e1; }
+        .setup-screen input, .setup-screen select {
+            width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #334155;
+            background: #0f172a; color: #fff; font-size: 0.85rem; box-sizing: border-box; outline: none;
+        }
 
-        .btn-main {
-            background: #22c55e; color: white; border: none; padding: 10px;
-            border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem; margin-top: 5px;
-        }
+        .btn-main {
+            background: #22c55e; color: white; border: none; padding: 12px;
+            border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.9rem; margin-top: 5px;
+        }
 
-        /* Active Chat Screen */
-        .chat-body { display: none; flex-direction: column; height: 300px; }
-        .chat-messages {
-            flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column;
-            gap: 8px; background: rgba(0, 0, 0, 0.25); font-size: 0.82rem;
-        }
+        .chat-body { display: none; flex-direction: column; height: 300px; }
+        .chat-messages {
+            flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column;
+            gap: 8px; background: rgba(0, 0, 0, 0.25); font-size: 0.82rem;
+        }
 
-        .message { max-width: 85%; padding: 8px 12px; border-radius: 10px; line-height: 1.4; word-break: break-word; }
-        .message.bot { background: rgba(255, 255, 255, 0.95); color: #0f172a; align-self: flex-start; border-bottom-right-radius: 2px; }
-        .message.user { background: var(--accent); color: white; align-self: flex-end; border-bottom-left-radius: 2px; }
+        .message { max-width: 85%; padding: 8px 12px; border-radius: 10px; line-height: 1.4; word-break: break-word; }
+        .message.bot { background: rgba(255, 255, 255, 0.95); color: #0f172a; align-self: flex-start; border-bottom-right-radius: 2px; }
+        .message.user { background: var(--accent); color: white; align-self: flex-end; border-bottom-left-radius: 2px; }
 
-        .chat-input-area {
-            padding: 8px; display: flex; gap: 6px; background: rgba(15, 23, 42, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .chat-input-area input {
-            flex: 1; padding: 6px 10px; border-radius: 6px; border: 1px solid #334155;
-            background: #0f172a; color: white; font-size: 0.8rem; outline: none;
-        }
-        .btn-mic { background: #e11d48; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
-        .btn-send { background: var(--accent); color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .chat-input-area {
+            padding: 8px; display: flex; gap: 6px; background: rgba(15, 23, 42, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .chat-input-area input {
+            flex: 1; padding: 6px 10px; border-radius: 6px; border: 1px solid #334155;
+            background: #0f172a; color: white; font-size: 0.8rem; outline: none;
+        }
+        .btn-mic { background: #e11d48; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
+        .btn-send { background: var(--accent); color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
 
-        /* Navigation Controls */
-        #nav-panel { position: fixed; top: 10px; left: 10px; z-index: 9999; display: flex; flex-direction: column; gap: 5px; width: 120px; }
-        .height-controls { display: flex; gap: 4px; }
-        .btn-height { flex: 1; background: #d97706; color: white; border: 1px solid white; padding: 6px 2px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 11px; text-align: center; }
+        #nav-panel { position: fixed; top: 10px; left: 10px; z-index: 9999; display: flex; flex-direction: column; gap: 5px; width: 120px; }
+        .height-controls { display: flex; gap: 4px; }
+        .btn-height { flex: 1; background: #d97706; color: white; border: 1px solid white; padding: 6px 2px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 11px; text-align: center; }
 
-        .control-btn { 
-            position: fixed; width: 42px; height: 42px; background: rgba(212, 175, 55, 0.85); border: 1.5px solid white; 
-            border-radius: 50%; z-index: 10000; display: flex; align-items: center; justify-content: center; 
-            color: white; font-weight: bold; font-size: 15px; user-select: none;
-        }
-        #up { bottom: 95px; left: 50px; } 
-        #down { bottom: 15px; left: 50px; } 
-        #left { bottom: 55px; left: 10px; } 
-        #right { bottom: 55px; left: 90px; }
-    </style>
+        .control-btn { 
+            position: fixed; width: 42px; height: 42px; background: rgba(212, 175, 55, 0.85); border: 1.5px solid white; 
+            border-radius: 50%; z-index: 10000; display: flex; align-items: center; justify-content: center; 
+            color: white; font-weight: bold; font-size: 15px; user-select: none;
+        }
+        #up { bottom: 95px; left: 50px; } 
+        #down { bottom: 15px; left: 50px; } 
+        #left { bottom: 55px; left: 10px; } 
+        #right { bottom: 55px; left: 90px; }
+    </style>
 </head>
 <body>
 
-    <div id="nav-panel">
-        <div class="height-controls">
-            <button class="btn-height" id="btn-up-cam">▲ أعلى</button>
-            <button class="btn-height" id="btn-down-cam">▼ أسفل</button>
-        </div>
-    </div>
+    <div id="nav-panel">
+        <div class="height-controls">
+            <button class="btn-height" id="btn-up-cam">▲ أعلى</button>
+            <button class="btn-height" id="btn-down-cam">▼ أسفل</button>
+        </div>
+    </div>
 
-    <div id="up" class="control-btn">↑</div>
-    <div id="down" class="control-btn">↓</div>
-    <div id="left" class="control-btn">←</div>
-    <div id="right" class="control-btn">→</div>
+    <div id="up" class="control-btn">↑</div>
+    <div id="down" class="control-btn">↓</div>
+    <div id="left" class="control-btn">←</div>
+    <div id="right" class="control-btn">→</div>
 
-    <div id="smart-chat-container">
-        <div class="chat-header">
-            <h3>👨‍🏫 الأستاذ عمر حسان</h3>
-            <span id="grade-badge-display" class="badge">القاعة الافتراضية</span>
-        </div>
+    <div id="smart-chat-container">
+        <div class="chat-header">
+            <h3>👨‍🏫 الأستاذ عمر حسان</h3>
+            <span id="grade-badge-display" class="badge">القاعة الافتراضية</span>
+        </div>
 
-        <!-- دخول سريعي وسهل بدون أي طلب لمفاتيح من الطالب -->
-        <div id="setup-screen" class="setup-screen">
-            <div>
-                <label>اسم الطالب:</label>
-                <input type="text" id="student-name" placeholder="أدخل اسمك الكريم...">
-            </div>
-            <div>
-                <label>المؤسسة / المرحلة:</label>
-                <select id="stage-select" onchange="updateSubOptions()">
-                    <option value="school">المدرسة (المنهج اليمني)</option>
-                    <option value="university">الجامعة / الكلية</option>
-                </select>
-            </div>
-            <div id="sub-option-container">
-                <label id="sub-label">الصف الدراسي:</label>
-                <select id="sub-select">
-                    <option value="الأول الثانوي">الأول الثانوي</option>
-                    <option value="الثاني الثانوي" selected>الثاني الثانوي</option>
-                    <option value="الثالث الثانوي">الثالث الثانوي</option>
-                </select>
-            </div>
-            <button class="btn-main" onclick="startSession()">دخول القاعة الافتراضية 🚀</button>
-        </div>
+        <div id="setup-screen" class="setup-screen">
+            <div>
+                <label>اسم الطالب:</label>
+                <input type="text" id="student-name" value="طالب جديد" placeholder="أدخل اسمك الكريم...">
+            </div>
+            <div>
+                <label>المؤسسة / المرحلة:</label>
+                <select id="stage-select" onchange="updateSubOptions()">
+                    <option value="school">المدرسة (المنهج اليمني)</option>
+                    <option value="university">الجامعة / الكلية</option>
+                </select>
+            </div>
+            <div id="sub-option-container">
+                <label id="sub-label">الصف الدراسي:</label>
+                <select id="sub-select">
+                    <option value="الأول الثانوي">الأول الثانوي</option>
+                    <option value="الثاني الثانوي" selected>الثاني الثانوي</option>
+                    <option value="الثالث الثانوي">الثالث الثانوي</option>
+                </select>
+            </div>
+            <button type="button" class="btn-main" id="enter-btn" onclick="startSession()">دخول القاعة الافتراضية 🚀</button>
+        </div>
 
-        <div id="chat-body" class="chat-body">
-            <div id="chat-messages" class="chat-messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="اسأل أو اضغط الميكروفون..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button class="btn-mic" id="mic-btn" onclick="startVoiceInput()" title="تحدث بصوتك">🎙️</button>
-                <button class="btn-send" onclick="sendMessage()">إرسال</button>
-            </div>
-        </div>
-    </div>
+        <div id="chat-body" class="chat-body">
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="user-input" placeholder="اسأل أو اضغط الميكروفون..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button class="btn-mic" id="mic-btn" onclick="startVoiceInput()" title="تحدث بصوتك">🎙️</button>
+                <button class="btn-send" onclick="sendMessage()">إرسال</button>
+            </div>
+        </div>
+    </div>
 
-    <canvas id="videoCanvas" width="512" height="768" style="display:none;"></canvas>
+    <canvas id="videoCanvas" width="512" height="768" style="display:none;"></canvas>
 
-    <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
-        <a-assets>
-            <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-        </a-assets>
+    <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
+        <a-assets>
+            <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
+        </a-assets>
 
-        <a-entity light="type: ambient; color: #FFF; intensity: 2.0"></a-entity>
-        <a-entity light="type: directional; color: #FFF; intensity: 1.2" position="-1 5 2"></a-entity>
+        <a-entity light="type: ambient; color: #FFF; intensity: 2.0"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 1.2" position="-1 5 2"></a-entity>
 
-        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#8d99ae" material="shader: flat;"></a-plane> 
-        <a-grid position="0 0.01 0" width="20" height="20" material="color: #1e293b; opacity: 0.4; transparent: true;"></a-grid>
-        
-        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#f8f9fa" material="shader: flat;"></a-box> 
-        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#f8f9fa" material="shader: flat;"></a-box> 
-        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#e9ecef" material="shader: flat;"></a-box> 
-        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#e9ecef" material="shader: flat;"></a-box> 
-        <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#ffffff" material="shader: flat;"></a-box> 
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#8d99ae" material="shader: flat;"></a-plane> 
+        <a-grid position="0 0.01 0" width="20" height="20" material="color: #1e293b; opacity: 0.4; transparent: true;"></a-grid>
+        
+        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#f8f9fa" material="shader: flat;"></a-box> 
+        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#f8f9fa" material="shader: flat;"></a-box> 
+        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#e9ecef" material="shader: flat;"></a-box> 
+        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#e9ecef" material="shader: flat;"></a-box> 
+        <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#ffffff" material="shader: flat;"></a-box> 
 
-        <a-box position="1 4 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
-        <a-box position="1 4 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
-            <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
-        </a-box>
+        <a-box position="1 4 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
+        <a-box position="1 4 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
+            <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
+        </a-box>
 
-        <a-entity id="teacher-avatar-container" position="-4.5 1.9 -9.5">
-            <a-plane id="avatarBox" width="2.5" height="3.8" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
-            <a-text value="Mr. Omar Hassan" position="0 2.1 0" align="center" width="6" color="#D4AF37"></a-text>
-        </a-entity>
+        <a-entity id="teacher-avatar-container" position="-4.5 1.9 -9.5">
+            <a-plane id="avatarBox" width="2.5" height="3.8" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
+            <a-text value="Mr. Omar Hassan" position="0 2.1 0" align="center" width="6" color="#D4AF37"></a-text>
+        </a-entity>
 
-        <a-entity id="rig" position="0 1.7 2">
-            <a-entity id="head" camera look-controls="pointerLockEnabled: false" rotation="0 0 0"></a-entity>
-        </a-entity>
-    </a-scene>
+        <a-entity id="rig" position="0 1.7 2">
+            <a-entity id="head" camera look-controls="pointerLockEnabled: false" rotation="0 0 0"></a-entity>
+        </a-entity>
+    </a-scene>
 
-    <script>
-        // ضع مفتاحك الشخصي الجديد هنا بين العلامتين "" مباشرة داخل الكود في جهازك
-        const GEMINI_API_KEY  AQ.Ab8RN6I-dlWPskMbM0zVNFkdRo28fE9vyRU6HIF_gy67WJpTNg
+    <script>
+        // ضع مفتاحك الشخصي الجديد بين العلامتين "" مع الحفاظ على علامات التنصيص
+        const GEMINI_API_KEY = "curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent" \
+  -H 'Content-Type: application/json' \
+  -H 'X-goog-api-key: AQ.Ab8RN6LTBmqqgL1qExdP3xvMsK2qO51QiRf8ttDE_5DkWIpvPg' \
+  -X POST \
+  -d '{
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "Explain how AI works in a few words"
+          }
+        ]
+      }
+    ]
+  }'";
 
+        let state = { studentName: "", stage: "", subOption: "" };
 
-        let state = { studentName: "", stage: "", subOption: "" };
+        function updateSubOptions() {
+            const stage = document.getElementById("stage-select").value;
+            const subLabel = document.getElementById("sub-label");
+            const subSelect = document.getElementById("sub-select");
 
-        function updateSubOptions() {
-            const stage = document.getElementById("stage-select").value;
-            const subLabel = document.getElementById("sub-label");
-            const subSelect = document.getElementById("sub-select");
+            if (stage === "school") {
+                subLabel.innerText = "الصف الدراسي:";
+                subSelect.innerHTML = `
+                    <option value="الأول الثانوي">الأول الثانوي</option>
+                    <option value="الثاني الثانوي" selected>الثاني الثانوي</option>
+                    <option value="الثالث الثانوي">الثالث الثانوي</option>
+                `;
+            } else {
+                subLabel.innerText = "التخصص الجامعي / القسم:";
+                subSelect.innerHTML = `
+                    <option value="قسم الفيزياء">قسم الفيزياء</option>
+                    <option value="كلية الهندسة">كلية الهندسة</option>
+                    <option value="كلية الحاسبات والذكاء الاصطناعي">كلية الحاسبات والذكاء الاصطناعي</option>
+                    <option value="قسم الكيمياء">قسم الكيمياء</option>
+                `;
+            }
+        }
 
-            if (stage === "school") {
-                subLabel.innerText = "الصف الدراسي:";
-                subSelect.innerHTML = `
-                    <option value="الأول الثانوي">الأول الثانوي</option>
-                    <option value="الثاني الثانوي" selected>الثاني الثانوي</option>
-                    <option value="الثالث الثانوي">الثالث الثانوي</option>
-                `;
-            } else {
-                subLabel.innerText = "التخصص الجامعي / القسم:";
-                subSelect.innerHTML = `
-                    <option value="قسم الفيزياء">قسم الفيزياء</option>
-                    <option value="كلية الهندسة">كلية الهندسة</option>
-                    <option value="كلية الحاسبات والذكاء الاصطناعي">كلية الحاسبات والذكاء الاصطناعي</option>
-                    <option value="قسم الكيمياء">قسم الكيمياء</option>
-                `;
-            }
-        }
+        function startSession() {
+            try {
+                let nameInput = document.getElementById("student-name").value.trim();
+                const stageInput = document.getElementById("stage-select").value;
+                const subInput = document.getElementById("sub-select").value;
 
-        function startSession() {
-            const nameInput = document.getElementById("student-name").value.trim();
-            const stageInput = document.getElementById("stage-select").value;
-            const subInput = document.getElementById("sub-select").value;
+                if (!nameInput) nameInput = "زائر";
 
-            if (!nameInput) return alert("يرجى إدخال اسم الطالب أولاً.");
+                state.studentName = nameInput;
+                state.stage = stageInput;
+                state.subOption = subInput;
 
-            state.studentName = nameInput;
-            state.stage = stageInput;
-            state.subOption = subInput;
+                document.getElementById("grade-badge-display").innerText = subInput;
+                document.getElementById("setup-screen").style.display = "none";
+                document.getElementById("chat-body").style.display = "flex";
 
-            document.getElementById("grade-badge-display").innerText = subInput;
-            document.getElementById("setup-screen").style.display = "none";
-            document.getElementById("chat-body").style.display = "flex";
+                const initialMsg = `أهلاً بك يا **${state.studentName}** في (${state.subOption})! أنا المساعد الافتراضي للأستاذ **عمر حسان**.\n\nأنا جاهز لمساعدتك وإجابة جميع استفساراتك العلميّة والأكاديمية!`;
+                appendMessage("bot", initialMsg);
+                
+                startAvatarVideo();
+            } catch (err) {
+                // إجبار النظام على الدخول في حال حدوث أي خطأ جانبي
+                document.getElementById("setup-screen").style.display = "none";
+                document.getElementById("chat-body").style.display = "flex";
+            }
+        }
 
-            const initialMsg = `أهلاً بك يا **${state.studentName}** في (${state.subOption})! أنا المساعد الافتراضي للأستاذ **عمر حسان**.\n\nأنا جاهز لمساعدتك وإجابة جميع استفساراتك العلميّة والأكاديمية!`;
-            appendMessage("bot", initialMsg);
-            
-            startAvatarVideo();
-        }
+        function appendMessage(sender, text) {
+            const container = document.getElementById("chat-messages");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${sender}`;
+            msgDiv.innerHTML = text.replace(/\n/g, "<br>");
+            container.appendChild(msgDiv);
 
-        function appendMessage(sender, text) {
-            const container = document.getElementById("chat-messages");
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `message ${sender}`;
-            msgDiv.innerHTML = text.replace(/\n/g, "<br>");
-            container.appendChild(msgDiv);
+            if (typeof renderMathInElement === "function") {
+                renderMathInElement(msgDiv, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
 
-            renderMathInElement(msgDiv, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ],
-                throwOnError: false
-            });
+            container.scrollTop = container.scrollHeight;
+        }
 
-            container.scrollTop = container.scrollHeight;
-        }
+        async function sendMessage() {
+            const input = document.getElementById("user-input");
+            const text = input.value.trim();
+            if (!text) return;
 
-        async function sendMessage() {
-            const input = document.getElementById("user-input");
-            const text = input.value.trim();
-            if (!text) return;
+            appendMessage("user", text);
+            input.value = "";
 
-            appendMessage("user", text);
-            input.value = "";
+            appendMessage("bot", "<i id='loading'>جاري إعداد الإجابة...</i>");
 
-            appendMessage("bot", "<i id='loading'>جاري إعداد الإجابة...</i>");
+            try {
+                const response = await fetchGeminiApi(text);
+                const loadingElem = document.getElementById('loading');
+                if (loadingElem) loadingElem.parentElement.remove();
 
-            try {
-                const response = await fetchGeminiApi(text);
-                const loadingElem = document.getElementById('loading');
-                if (loadingElem) loadingElem.parentElement.remove();
+                appendMessage("bot", response);
+                speak(response.replace(/[\$\*\#]/g, ''));
+            } catch (err) {
+                const loadingElem = document.getElementById('loading');
+                if (loadingElem) loadingElem.parentElement.remove();
+                
+                appendMessage("bot", `<b>تنبيه:</b> ${err.message}`);
+            }
+        }
 
-                appendMessage("bot", response);
-                speak(response.replace(/[\$\*\#]/g, ''));
-            } catch (err) {
-                const loadingElem = document.getElementById('loading');
-                if (loadingElem) loadingElem.parentElement.remove();
-                
-                appendMessage("bot", `<b>تنبيه:</b> ${err.message}`);
-            }
-        }
+        function startVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("متصفحك لا يدعم التعرف الصوتي المباشر، يمكنك استخدام الكتابة.");
+                return;
+            }
 
-        function startVoiceInput() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("متصفحك لا يدعم التعرف الصوتي المباشر، يمكنك استخدام الكتابة.");
-                return;
-            }
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ar-SA';
+            const micBtn = document.getElementById('mic-btn');
+            micBtn.style.background = '#22c55e';
 
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA';
-            const micBtn = document.getElementById('mic-btn');
-            micBtn.style.background = '#22c55e';
+            recognition.onresult = function(event) {
+                const text = event.results[0][0].transcript;
+                document.getElementById('user-input').value = text;
+                micBtn.style.background = '#e11d48';
+                sendMessage();
+            };
 
-            recognition.onresult = function(event) {
-                const text = event.results[0][0].transcript;
-                document.getElementById('user-input').value = text;
-                micBtn.style.background = '#e11d48';
-                sendMessage();
-            };
+            recognition.onerror = function() { micBtn.style.background = '#e11d48'; };
+            recognition.onend = function() { micBtn.style.background = '#e11d48'; };
 
-            recognition.onerror = function() { micBtn.style.background = '#e11d48'; };
-            recognition.onend = function() { micBtn.style.background = '#e11d48'; };
+            recognition.start();
+        }
 
-            recognition.start();
-        }
-
-        async function fetchGeminiApi(userMessage) {
-            const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان.
+        async function fetchGeminiApi(userMessage) {
+            const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان.
 تتحدث مع الطالب (${state.studentName}) في (${state.subOption}).
 القواعد:
 1. اشرح المفاهيم العلمية والأكاديمية بدقة ووضوح وبأسلوب تربوي يناسب المستوى الدراسي المحدد.
 2. نسّق القوانين والمعادلات بفرمتة KaTeX مثل $F = m \\cdot a$.
 3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان.`;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-            const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: [{ parts: [{ text: userMessage }] }]
-                })
-            });
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    system_instruction: { parts: [{ text: systemPrompt }] },
+                    contents: [{ parts: [{ text: userMessage }] }]
+                })
+            });
 
-            const data = await res.json();
-            if (data.error) {
-                throw new Error(data.error.message || "حدث خطأ في الاتصال بالخدمة.");
-            }
+            const data = await res.json();
+            if (data.error) {
+                throw new Error(data.error.message || "حدث خطأ في الاتصال بالخدمة.");
+            }
 
-            return data.candidates[0].content.parts[0].text;
-        }
+            return data.candidates[0].content.parts[0].text;
+        }
 
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA';
-                utterance.rate = 0.95;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.95;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
 
-        var video = document.getElementById('teacherVideo');
-        var canvas = document.getElementById('videoCanvas');
-        var ctx = canvas.getContext('2d');
-        var avatarBox = document.getElementById('avatarBox');
-        var canvasTexture = null;
+        var video = document.getElementById('teacherVideo');
+        var canvas = document.getElementById('videoCanvas');
+        var ctx = canvas.getContext('2d');
+        var avatarBox = document.getElementById('avatarBox');
+        var canvasTexture = null;
 
-        function startAvatarVideo() {
-            video.muted = true;
-            video.play().then(() => {
-                canvasTexture = new THREE.CanvasTexture(canvas);
-                var mesh = avatarBox.getObject3D('mesh');
-                if (mesh) {
-                    mesh.material.map = canvasTexture;
-                    mesh.material.transparent = true;
-                    mesh.material.opacity = 1;
-                    mesh.material.needsUpdate = true;
-                }
-            }).catch(e => console.log(e));
+        function startAvatarVideo() {
+            video.muted = true;
+            video.play().then(() => {
+                canvasTexture = new THREE.CanvasTexture(canvas);
+                var mesh = avatarBox.getObject3D('mesh');
+                if (mesh) {
+                    mesh.material.map = canvasTexture;
+                    mesh.material.transparent = true;
+                    mesh.material.opacity = 1;
+                    mesh.material.needsUpdate = true;
+                }
+            }).catch(e => console.log(e));
 
-            function processFrame() {
-                if (!video.paused && !video.ended && video.readyState >= 2) {
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    var l = frame.data.length / 4;
+            function processFrame() {
+                if (!video.paused && !video.ended && video.readyState >= 2) {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    var l = frame.data.length / 4;
 
-                    for (var i = 0; i < l; i++) {
-                        var r = frame.data[i * 4 + 0];
-                        var g = frame.data[i * 4 + 1];
-                        var b = frame.data[i * 4 + 2];
+                    for (var i = 0; i < l; i++) {
+                        var r = frame.data[i * 4 + 0];
+                        var g = frame.data[i * 4 + 1];
+                        var b = frame.data[i * 4 + 2];
 
-                        if (g > 90 && r < 140 && b < 140 && g > r * 1.1) {
-                            frame.data[i * 4 + 3] = 0;
-                        }
-                    }
-                    ctx.putImageData(frame, 0, 0);
-                    if (canvasTexture) canvasTexture.needsUpdate = true;
-                }
-                requestAnimationFrame(processFrame);
-            }
-            processFrame();
-        }
+                        if (g > 90 && r < 140 && b < 140 && g > r * 1.1) {
+                            frame.data[i * 4 + 3] = 0;
+                        }
+                    }
+                    ctx.putImageData(frame, 0, 0);
+                    if (canvasTexture) canvasTexture.needsUpdate = true;
+                }
+                requestAnimationFrame(processFrame);
+            }
+            processFrame();
+        }
 
-        function changeCameraHeight(delta) {
-            var rig = document.getElementById('rig');
-            if (!rig) return;
-            var pos = rig.getAttribute('position');
-            var newY = pos.y + delta;
-            if (newY >= 1.0 && newY <= 6.0) {
-                pos.y = newY;
-                rig.setAttribute('position', pos);
-            }
-        }
+        function changeCameraHeight(delta) {
+            var rig = document.getElementById('rig');
+            if (!rig) return;
+            var pos = rig.getAttribute('position');
+            var newY = pos.y + delta;
+            if (newY >= 1.0 && newY <= 6.0) {
+                pos.y = newY;
+                rig.setAttribute('position', pos);
+            }
+        }
 
-        function bindCamBtn(id, delta) {
-            var btn = document.getElementById(id);
-            if (!btn) return;
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); changeCameraHeight(delta); }, {passive: false});
-            btn.addEventListener('click', (e) => { e.preventDefault(); changeCameraHeight(delta); });
-        }
+        function bindCamBtn(id, delta) {
+            var btn = document.getElementById(id);
+            if (!btn) return;
+            btn.addEventListener('touchstart', (e) => { e.preventDefault(); changeCameraHeight(delta); }, {passive: false});
+            btn.addEventListener('click', (e) => { e.preventDefault(); changeCameraHeight(delta); });
+        }
 
-        bindCamBtn('btn-up-cam', 0.4);
-        bindCamBtn('btn-down-cam', -0.4);
+        bindCamBtn('btn-up-cam', 0.4);
+        bindCamBtn('btn-down-cam', -0.4);
 
-        var rig = document.getElementById('rig');
-        var head = document.getElementById('head');
-        var keys = {up: false, down: false, left: false, right: false};
+        var rig = document.getElementById('rig');
+        var head = document.getElementById('head');
+        var keys = {up: false, down: false, left: false, right: false};
 
-        function setupBtn(id, k) {
-            var b = document.getElementById(id);
-            if (!b) return;
+        function setupBtn(id, k) {
+            var b = document.getElementById(id);
+            if (!b) return;
 
-            var start = (e) => { e.preventDefault(); keys[k] = true; };
-            var end = (e) => { e.preventDefault(); keys[k] = false; };
+            var start = (e) => { e.preventDefault(); keys[k] = true; };
+            var end = (e) => { e.preventDefault(); keys[k] = false; };
 
-            b.addEventListener('touchstart', start, {passive: false});
-            b.addEventListener('touchend', end, {passive: false});
-            b.addEventListener('mousedown', start);
-            b.addEventListener('mouseup', end);
-            b.addEventListener('mouseleave', end);
-        }
+            b.addEventListener('touchstart', start, {passive: false});
+            b.addEventListener('touchend', end, {passive: false});
+            b.addEventListener('mousedown', start);
+            b.addEventListener('mouseup', end);
+            b.addEventListener('mouseleave', end);
+        }
 
-        setupBtn('up', 'up'); setupBtn('down', 'down');
-        setupBtn('left', 'left'); setupBtn('right', 'right');
+        setupBtn('up', 'up'); setupBtn('down', 'down');
+        setupBtn('left', 'left'); setupBtn('right', 'right');
 
-        setInterval(() => {
-            if (!rig || !head) return;
-            var pos = rig.getAttribute('position');
-            var rot = head.getAttribute('rotation');
-            var ang = rot.y * Math.PI / 180;
-            var s = 0.35;
-            
-            let nextX = pos.x;
-            let nextZ = pos.z;
+        setInterval(() => {
+            if (!rig || !head) return;
+            var pos = rig.getAttribute('position');
+            var rot = head.getAttribute('rotation');
+            var ang = rot.y * Math.PI / 180;
+            var s = 0.35;
+            
+            let nextX = pos.x;
+            let nextZ = pos.z;
 
-            if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
-            if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
-            if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
-            if(keys.right){ nextX += Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
+            if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
+            if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
+            if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
+            if(keys.right){ nextX += Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
 
-            if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
-                pos.x = nextX; pos.z = nextZ;
-                rig.setAttribute('position', pos);
-            }
-        }, 16);
-    </script>
+            if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
+                pos.x = nextX; pos.z = nextZ;
+                rig.setAttribute('position', pos);
+            }
+        }, 16);
+    </script>
 </body>
 </html>
+
