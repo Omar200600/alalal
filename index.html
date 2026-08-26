@@ -8,7 +8,7 @@
     <!-- A-Frame 3D -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
-    <!-- مكتبة KaTeX لتنسيق المعادلات والرموز الفيزيائية -->
+    <!-- KaTeX for Physics Math Rendering -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
@@ -166,36 +166,41 @@
             <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
         </a-assets>
 
-        <a-entity light="type: ambient; color: #FFF; intensity: 2.5"></a-entity>
+        <a-entity light="type: ambient; color: #FFF; intensity: 2.0"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 1.2" position="-1 5 2"></a-entity>
 
-        <a-grid position="0 0 0" width="20" height="20" static-body material="color: #E2E8F0; shader: flat;"></a-grid>
-        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#CBD5E1" material="shader: flat; roughness: 0.1;"></a-plane> 
+        <!-- Classroom Floor & Tiles -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#8d99ae" material="shader: flat;"></a-plane> 
+        <a-grid position="0 0.01 0" width="20" height="20" material="color: #1e293b; opacity: 0.4; transparent: true;"></a-grid>
         
-        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
-        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
-        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" material="shader: flat;"></a-box> 
-        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" material="shader: flat;"></a-box> 
-        <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#FFFFFF" material="shader: flat;"></a-box> 
+        <!-- Classroom Walls & Ceiling -->
+        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#f8f9fa" material="shader: flat;"></a-box> 
+        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#f8f9fa" material="shader: flat;"></a-box> 
+        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#e9ecef" material="shader: flat;"></a-box> 
+        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#e9ecef" material="shader: flat;"></a-box> 
+        <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#ffffff" material="shader: flat;"></a-box> 
 
-        <a-box position="1 3.8 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
-        <a-box position="1 3.8 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
+        <!-- Blackboard -->
+        <a-box position="1 4 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
+        <a-box position="1 4 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <a-entity id="teacher-avatar-container" position="-4.5 1.35 -9.5">
-            <a-plane id="avatarBox" width="1.8" height="2.7" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
-            <a-text value="Mr. Omar Hassan" position="0 1.5 0" align="center" width="5" color="#D4AF37"></a-text>
+        <!-- Resized Avatar Grounded Properly -->
+        <a-entity id="teacher-avatar-container" position="-4.5 1.9 -9.5">
+            <a-plane id="avatarBox" width="2.5" height="3.8" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
+            <a-text value="Mr. Omar Hassan" position="0 2.1 0" align="center" width="6" color="#D4AF37"></a-text>
         </a-entity>
 
-        <a-entity id="rig" position="0 2.2 4">
+        <!-- Initial Camera Viewpoint -->
+        <a-entity id="rig" position="0 1.7 2">
             <a-entity id="head" camera look-controls="pointerLockEnabled: false" rotation="0 0 0"></a-entity>
         </a-entity>
     </a-scene>
 
     <script>
-        // ضع المفتاح الصحيح الذي يبدأ بـ AIzaSy هنا بعد إيقاف الترجمة للعربية
-        const GEMINI_API_KEY = "AIzaSy_ضع_المفتاح_الانسخي_بدون_ترجمة_هنا";
+        // API Key embedded directly
+        const GEMINI_API_KEY = "AQ.Ab8RN6KHAYb4dQ-JCrNYO7hXhwGfEDEQZhSfkA6zSpSs7RdvOQ";
         let state = { studentName: "", grade: "" };
 
         function startSession() {
@@ -296,8 +301,7 @@
 2. نسّق القوانين بفرمتة KaTeX مثل $F = m \\cdot a$ أو $\\tau = F \\cdot d$.
 3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان.`;
 
-            // استدعاء الموديل المعتمد لـ Gemini API
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
             const res = await fetch(url, {
                 method: "POST",
