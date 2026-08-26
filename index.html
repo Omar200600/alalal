@@ -31,7 +31,6 @@
             user-select: none;
         }
 
-        /* نافذة المساعد الذكي العائمة فوق مشهد الـ 3D */
         #smart-chat-container {
             position: fixed;
             bottom: 12px;
@@ -61,7 +60,6 @@
         .chat-header h3 { margin: 0; font-size: 0.9rem; color: #38bdf8; }
         .chat-header .badge { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; color: #f1f5f9; }
 
-        /* شاشة الإعداد الأولية */
         .setup-screen {
             padding: 12px;
             display: flex;
@@ -79,7 +77,6 @@
             border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
         }
 
-        /* منطقة المحادثة */
         .chat-body { display: none; flex-direction: column; height: 280px; }
         .chat-messages {
             flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column;
@@ -197,8 +194,8 @@
     </a-scene>
 
     <script>
-        // تم تضمين المفتاح الذي أرسلته بنجاح
-        const GEMINI_API_KEY = "أق.Ab8RN6LHwu7BrUm8x2M_I93qLBphKVSv0AyPc2JmS7y3kddigQ";
+        // ضع المفتاح الصحيح الذي يبدأ بـ AIzaSy هنا بعد إيقاف الترجمة للعربية
+        const GEMINI_API_KEY = "AIzaSy_ضع_المفتاح_الانسخي_بدون_ترجمة_هنا";
         let state = { studentName: "", grade: "" };
 
         function startSession() {
@@ -299,7 +296,8 @@
 2. نسّق القوانين بفرمتة KaTeX مثل $F = m \\cdot a$ أو $\\tau = F \\cdot d$.
 3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان.`;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`;
+            // استدعاء الموديل المعتمد لـ Gemini API
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
             const res = await fetch(url, {
                 method: "POST",
