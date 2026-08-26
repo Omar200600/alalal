@@ -1,124 +1,194 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>فصل الفيزياء الافتراضي - الأستاذ عمر حسان</title>
-    
-    <!-- A-Frame 3D -->
+    <title>فصل الفيزياء الافتراضي - أكسيس 3D</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-
-    <!-- KaTeX for Physics Math Rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-
     <style>
         .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
 
-        :root {
-            --primary: #1e3a8a;
-            --accent: #0284c7;
-            --bg-glass: rgba(15, 23, 42, 0.88);
-            --border-gold: #D4AF37;
+        #welcome-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #welcome-modal button {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+        }
+        .modal-select {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #38bdf8;
+            background: #0f172a;
+            color: white;
+            font-size: 14px;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        #nav-panel { 
+            position: fixed; 
+            top: 10px; 
+            left: 10px; 
+            z-index: 9999; 
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            width: 130px; 
+        }
+
+        .height-controls {
+            display: flex;
+            gap: 5px;
+            justify-content: space-between;
+        }
+        .btn-height {
+            flex: 1;
+            background: #d97706;
+            color: white;
+            border: 1px solid white;
+            padding: 8px 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+            text-align: center;
+            touch-action: manipulation;
             user-select: none;
         }
 
-        #smart-chat-container {
+        #chat-panel {
             position: fixed;
-            bottom: 12px;
-            right: 12px;
-            width: 320px;
-            max-width: calc(100vw - 24px);
-            background: var(--bg-glass);
-            border: 1.5px solid var(--border-gold);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            z-index: 99999;
-            color: #ffffff;
+            bottom: 10px;
+            right: 10px;
+            width: 210px;
+            background: rgba(15, 23, 42, 0.92);
+            border: 2px solid #D4AF37;
+            border-radius: 10px;
+            padding: 8px;
+            color: #fff;
+            font-family: sans-serif;
+            z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
-
-        .chat-header {
-            background: rgba(30, 58, 138, 0.9);
-            padding: 10px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        #chat-panel h3 { margin: 0 0 5px 0; font-size: 11px; color: #38bdf8; text-align: center; }
+        #chat-history {
+            height: 80px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.4);
+            padding: 5px;
+            border-radius: 6px;
+            font-size: 10px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .chat-header h3 { margin: 0; font-size: 0.9rem; color: #38bdf8; }
-        .chat-header .badge { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; color: #f1f5f9; }
-
-        .setup-screen {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .input-box { display: flex; flex-direction: column; gap: 4px; }
+        select.chat-select {
+            width: 100%;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #38bdf8;
+            font-size: 10px;
+            outline: none;
         }
-        .setup-screen label { font-size: 0.8rem; font-weight: bold; color: #cbd5e1; }
-        .setup-screen input, .setup-screen select {
-            width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #334155;
-            background: #0f172a; color: #fff; font-size: 0.85rem; box-sizing: border-box; outline: none;
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            font-size: 10px;
+            box-sizing: border-box;
         }
-
-        .btn-main {
-            background: #22c55e; color: white; border: none; padding: 8px;
-            border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;
-        }
-
-        .chat-body { display: none; flex-direction: column; height: 280px; }
-        .chat-messages {
-            flex: 1; padding: 10px; overflow-y: auto; display: flex; flex-direction: column;
-            gap: 8px; background: rgba(0, 0, 0, 0.25); font-size: 0.82rem;
-        }
-
-        .message { max-width: 85%; padding: 8px 12px; border-radius: 10px; line-height: 1.4; word-break: break-word; }
-        .message.bot { background: rgba(255, 255, 255, 0.95); color: #0f172a; align-self: flex-start; border-bottom-right-radius: 2px; }
-        .message.user { background: var(--accent); color: white; align-self: flex-end; border-bottom-left-radius: 2px; }
-
-        .chat-input-area {
-            padding: 8px; display: flex; gap: 6px; background: rgba(15, 23, 42, 0.95);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .chat-input-area input {
-            flex: 1; padding: 6px 10px; border-radius: 6px; border: 1px solid #334155;
-            background: #0f172a; color: white; font-size: 0.8rem; outline: none;
-        }
-        .btn-mic { background: #e11d48; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; }
-        .btn-send { background: var(--accent); color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
-
-        #nav-panel { position: fixed; top: 10px; left: 10px; z-index: 9999; display: flex; flex-direction: column; gap: 5px; width: 120px; }
-        .height-controls { display: flex; gap: 4px; }
-        .btn-height { flex: 1; background: #d97706; color: white; border: 1px solid white; padding: 6px 2px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 11px; text-align: center; }
+        .btn-group { display: flex; gap: 4px; }
+        .btn-send { flex: 1; background: #0284c7; color: white; border: none; padding: 5px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 10px; }
+        .btn-mic { background: #e11d48; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 10px; }
+        .btn-action { width: 100%; padding: 6px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; color: white; font-size: 11px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
 
         .control-btn { 
-            position: fixed; width: 42px; height: 42px; background: rgba(212, 175, 55, 0.85); border: 1.5px solid white; 
-            border-radius: 50%; z-index: 10000; display: flex; align-items: center; justify-content: center; 
-            color: white; font-weight: bold; font-size: 15px; user-select: none;
+            position: fixed; 
+            width: 45px; 
+            height: 45px; 
+            background: rgba(212, 175, 55, 0.9); 
+            border: 2px solid white; 
+            border-radius: 50%; 
+            z-index: 10000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: bold; 
+            touch-action: manipulation; 
+            font-size: 16px; 
+            user-select: none;
+            -webkit-user-select: none;
         }
-        #up { bottom: 95px; left: 50px; } 
-        #down { bottom: 15px; left: 50px; } 
-        #left { bottom: 55px; left: 10px; } 
-        #right { bottom: 55px; left: 90px; }
+        #up { bottom: 105px; left: 55px; } 
+        #down { bottom: 15px; left: 55px; } 
+        #left { bottom: 60px; left: 10px; } 
+        #right { bottom: 60px; left: 100px; }
     </style>
 </head>
 <body>
+
+    <div id="welcome-modal">
+        <h2>مرحباً بك في فصل الفيزياء الافتراضي منصة أكسيس 3D</h2>
+        <p>اختر المستوى التعليمي للبدء:</p>
+        <select id="modal-edu-level" class="modal-select" onchange="syncEduLevel(this.value)">
+            <option value="school">مدرسة (تعليم أساسي / ثانوي)</option>
+            <option value="university">جامعة / تعليم عالٍ</option>
+        </select>
+        <button onclick="startClassroom()">دخول الفصل 🚪</button>
+    </div>
 
     <div id="nav-panel">
         <div class="height-controls">
             <button class="btn-height" id="btn-up-cam">▲ أعلى</button>
             <button class="btn-height" id="btn-down-cam">▼ أسفل</button>
+        </div>
+        <button class="btn-action" style="background:#0284c7;" onclick="replayWelcome()">🔊 إعادة الترحيب</button>
+        <button class="btn-action" style="background:#8B4513;" onclick="window.location.href='corridor.html'">🏃 العودة للممر</button>
+    </div>
+
+    <div id="chat-panel">
+        <h3>👨‍🏫 معلم الفيزياء</h3>
+        <select id="edu-level" class="chat-select" onchange="syncEduLevel(this.value)">
+            <option value="school">المستوى: مدرسة</option>
+            <option value="university">المستوى: جامعة / تعليم عالٍ</option>
+        </select>
+        <div id="chat-history">
+            <div><b>المعلم:</b> أهلاً بك! يمكنك السؤال كتابةً أو بالصوت.</div>
+        </div>
+        <div class="input-box">
+            <input type="text" id="user-input" placeholder="اسأل المعلم..." onkeydown="if(event.key==='Enter') askTeacher()">
+            <div class="btn-group">
+                <button class="btn-mic" id="mic-btn" onclick="startVoiceInput()" title="تحدث بصوتك">🎙️</button>
+                <button class="btn-send" onclick="askTeacher()">إرسال</button>
+            </div>
         </div>
     </div>
 
@@ -127,83 +197,84 @@
     <div id="left" class="control-btn">←</div>
     <div id="right" class="control-btn">→</div>
 
-    <div id="smart-chat-container">
-        <div class="chat-header">
-            <h3>👨‍🏫 الأستاذ عمر حسان</h3>
-            <span id="grade-badge-display" class="badge">الفيزياء</span>
-        </div>
-
-        <div id="setup-screen" class="setup-screen">
-            <div>
-                <label>اسم الطالب:</label>
-                <input type="text" id="student-name" placeholder="أدخل اسمك...">
-            </div>
-            <div>
-                <label>المستوى الدراسي / المرحلة:</label>
-                <select id="grade-select">
-                    <option value="grade1">الأول الثانوي</option>
-                    <option value="grade2" selected>الثاني الثانوي</option>
-                    <option value="grade3">الثالث الثانوي</option>
-                    <option value="university">المرحلة الجامعية / العامة</option>
-                </select>
-            </div>
-            <button class="btn-main" onclick="startSession()">بدء التفاعل مع المعلم 🚀</button>
-        </div>
-
-        <div id="chat-body" class="chat-body">
-            <div id="chat-messages" class="chat-messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="user-input" placeholder="اسأل أو اضغط الميكروفون..." onkeypress="if(event.key==='Enter') sendMessage()">
-                <button class="btn-mic" id="mic-btn" onclick="startVoiceInput()" title="التحدث بصوتك">🎙️</button>
-                <button class="btn-send" onclick="sendMessage()">إرسال</button>
-            </div>
-        </div>
-    </div>
-
     <canvas id="videoCanvas" width="512" height="768" style="display:none;"></canvas>
 
     <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
+        
         <a-assets>
             <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
         </a-assets>
 
-        <a-entity light="type: ambient; color: #FFF; intensity: 2.0"></a-entity>
+        <a-entity light="type: ambient; color: #FFF; intensity: 2.5"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 1.2" position="-1 5 2"></a-entity>
 
-        <!-- Classroom Floor & Tiles -->
-        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#8d99ae" material="shader: flat;"></a-plane> 
-        <a-grid position="0 0.01 0" width="20" height="20" material="color: #1e293b; opacity: 0.4; transparent: true;"></a-grid>
+        <!-- أرضية رخامية مضمونة الظهور ومقسمة بشكل فاخر -->
+        <a-grid position="0 0 0" width="20" height="20" static-body material="color: #E2E8F0; shader: flat;"></a-grid>
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" color="#CBD5E1" material="shader: flat; roughness: 0.1;"></a-plane> 
         
-        <!-- Classroom Walls & Ceiling -->
-        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#f8f9fa" material="shader: flat;"></a-box> 
-        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#f8f9fa" material="shader: flat;"></a-box> 
-        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#e9ecef" material="shader: flat;"></a-box> 
-        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#e9ecef" material="shader: flat;"></a-box> 
-        <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#ffffff" material="shader: flat;"></a-box> 
+        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
+        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
+        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" material="shader: flat;"></a-box> 
+        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" material="shader: flat;"></a-box> 
+        
+        <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#FFFFFF" material="shader: flat;"></a-box> 
 
-        <!-- Blackboard -->
-        <a-box position="1 4 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
-        <a-box position="1 4 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
+        <a-box position="0 6.5 -9.8" width="7" height="1" depth="0.1" color="#8B4513" material="shader: flat;">
+            <a-text value="PHYSICS CLASSROOM 101" align="center" position="0 0 0.1" color="#D4AF37" width="10"></a-text>
+        </a-box>
+
+        <a-box position="1 3.8 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
+        <a-box position="1 3.8 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- Resized Avatar Grounded Properly -->
-        <a-entity id="teacher-avatar-container" position="-4.5 1.9 -9.5">
-            <a-plane id="avatarBox" width="2.5" height="3.8" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
-            <a-text value="Mr. Omar Hassan" position="0 2.1 0" align="center" width="6" color="#D4AF37"></a-text>
+        <!-- ضبط الأفتار ليكون مستقراً تماماً على مستوى بلاط الأرضية Y=1.35 بأبعاد متناسبة -->
+        <a-entity id="teacher-avatar-container" position="-4.5 1.35 -9.5">
+            <a-plane id="avatarBox" width="1.8" height="2.7" material="shader: flat; transparent: true; opacity: 0; side: double;"></a-plane>
+            <a-text value="Physics Teacher AI" position="0 1.5 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
 
-        <!-- Initial Camera Viewpoint -->
-        <a-entity id="rig" position="0 1.7 2">
+        <a-entity id="chairs-matrix">
+            <a-entity position="-5 0 -2" rotation="0 180 0">
+                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
+            </a-entity>
+            <a-entity position="-5 0 2" rotation="0 180 0">
+                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
+            </a-entity>
+
+            <a-entity position="5 0 -2" rotation="0 180 0">
+                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
+            </a-entity>
+            <a-entity position="5 0 2" rotation="0 180 0">
+                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
+            </a-entity>
+        </a-entity>
+
+        <!-- الكاميرا بارتفاع نظير لطول الإنسان الطبيعي Y=2.2 -->
+        <a-entity id="rig" position="0 2.2 4">
             <a-entity id="head" camera look-controls="pointerLockEnabled: false" rotation="0 0 0"></a-entity>
         </a-entity>
     </a-scene>
 
     <script>
-        // Place your Gemini API Key directly inside the quotes below:
+        // ==========================================
+        //  ضع مفتاح API الخاص بك في المتغير أدناه
+        // ==========================================
         const GEMINI_API_KEY = "curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent" \
   -H 'Content-Type: application/json' \
-  -H 'X-goog-api-key: AQ.Ab8RN6KkHsNC1xYhzZZVKoPlCoLrSKvi9ita-W_VtLby77f18w' \
+  -H 'X-goog-api-key: AQ.Ab8RN6IgkyEma3cIKfWb-ZSA4Q-axZ5oEWPVKRpbhnalR3GzEw' \
   -X POST \
   -d '{
     "contents": [
@@ -217,159 +288,30 @@
     ]
   }'";
 
-        let state = { studentName: "", grade: "" };
-
-        function startSession() {
-            const nameInput = document.getElementById("student-name").value.trim();
-            const gradeInput = document.getElementById("grade-select").value;
-
-            if (!nameInput) return alert("يرجى إدخال اسم الطالب أولاً.");
-
-            state.studentName = nameInput;
-            state.grade = gradeInput;
-
-            const gradeNames = { 
-                'grade1': 'الأول الثانوي', 
-                'grade2': 'الثاني الثانوي', 
-                'grade3': 'الثالث الثانوي',
-                'university': 'المرحلة الجامعية / العامة'
-            };
-
-            document.getElementById("grade-badge-display").innerText = gradeNames[state.grade];
-
-            document.getElementById("setup-screen").style.display = "none";
-            document.getElementById("chat-body").style.display = "flex";
-
-            const initialMsg = `أهلاً بك يا **${state.studentName}**! أنا المساعد الافتراضي للأستاذ **عمر حسان** لمادة الفيزياء (${gradeNames[state.grade]}).\n\nأنا جاهز لإجابة جميع أسئلتك!`;
-            appendMessage("bot", initialMsg);
-            
-            startAvatarVideo();
-        }
-
-        function appendMessage(sender, text) {
-            const container = document.getElementById("chat-messages");
-            const msgDiv = document.createElement("div");
-            msgDiv.className = `message ${sender}`;
-            msgDiv.innerHTML = text.replace(/\n/g, "<br>");
-            container.appendChild(msgDiv);
-
-            renderMathInElement(msgDiv, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ],
-                throwOnError: false
-            });
-
-            container.scrollTop = container.scrollHeight;
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById("user-input");
-            const text = input.value.trim();
-            if (!text) return;
-
-            appendMessage("user", text);
-            input.value = "";
-
-            appendMessage("bot", "<i id='loading'>جاري إعداد الإجابة...</i>");
-
-            try {
-                const response = await fetchGeminiApi(text);
-                const loadingElem = document.getElementById('loading');
-                if (loadingElem) loadingElem.parentElement.remove();
-
-                appendMessage("bot", response);
-                speak(response.replace(/[\$\*\#]/g, ''));
-            } catch (err) {
-                console.error(err);
-                const loadingElem = document.getElementById('loading');
-                if (loadingElem) loadingElem.parentElement.remove();
-                
-                appendMessage("bot", `<b>تنبيه من النظام:</b> ${err.message}`);
-            }
-        }
-
-        function startVoiceInput() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("متصفحك لا يدعم التعرف الصوتي المباشر، يرجى استخدام الكتابة.");
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA';
-            const micBtn = document.getElementById('mic-btn');
-            micBtn.style.background = '#22c55e';
-
-            recognition.onresult = function(event) {
-                const text = event.results[0][0].transcript;
-                document.getElementById('user-input').value = text;
-                micBtn.style.background = '#e11d48';
-                sendMessage();
-            };
-
-            recognition.onerror = function() { micBtn.style.background = '#e11d48'; };
-            recognition.onend = function() { micBtn.style.background = '#e11d48'; };
-
-            recognition.start();
-        }
-
-        async function fetchGeminiApi(userMessage) {
-            const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان لمادة الفيزياء.
-تتحدث مع الطالب (${state.studentName}) في مستوى (${state.grade}).
-القواعد:
-1. اشرح المفهوم الفيزيائي بدقة ووضوح وبأسلوب تربوي مبسط.
-2. نسّق القوانين بفرمتة KaTeX مثل $F = m \\cdot a$ أو $\\tau = F \\cdot d$.
-3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان.`;
-
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-            const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: [{ parts: [{ text: userMessage }] }]
-                })
-            });
-
-            const data = await res.json();
-            if (data.error) {
-                throw new Error(data.error.message || "حدث خطأ في الاتصال بالخدمة.");
-            }
-
-            return data.candidates[0].content.parts[0].text;
-        }
-
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ar-SA';
-                utterance.rate = 0.95;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
         var video = document.getElementById('teacherVideo');
         var canvas = document.getElementById('videoCanvas');
         var ctx = canvas.getContext('2d');
         var avatarBox = document.getElementById('avatarBox');
         var canvasTexture = null;
 
-        function startAvatarVideo() {
+        const welcomeSpeech = "مرحباً بك عزيزي الزائر في فصل الفيزياء الافتراضي الخاص بـ أكسيس 3D. أنا معلمك الافتراضي، يمكنك السؤال كتابةً أو بالصوت وسأكون سعيداً بإجابتك!";
+
+        function syncEduLevel(val) {
+            document.getElementById('modal-edu-level').value = val;
+            document.getElementById('edu-level').value = val;
+        }
+
+        function startClassroom() {
+            document.getElementById('welcome-modal').style.display = 'none';
+
             video.muted = true;
             video.play().then(() => {
-                canvasTexture = new THREE.CanvasTexture(canvas);
-                var mesh = avatarBox.getObject3D('mesh');
-                if (mesh) {
-                    mesh.material.map = canvasTexture;
-                    mesh.material.transparent = true;
-                    mesh.material.opacity = 1;
-                    mesh.material.needsUpdate = true;
-                }
+                initChromaTexture();
             }).catch(e => console.log(e));
+
+            setTimeout(() => {
+                speak(welcomeSpeech);
+            }, 500);
 
             function processFrame() {
                 if (!video.paused && !video.ended && video.readyState >= 2) {
@@ -394,6 +336,18 @@
             processFrame();
         }
 
+        function initChromaTexture() {
+            canvasTexture = new THREE.CanvasTexture(canvas);
+            var mesh = avatarBox.getObject3D('mesh');
+            if (mesh) {
+                mesh.material.map = canvasTexture;
+                mesh.material.transparent = true;
+                mesh.material.opacity = 1;
+                mesh.material.needsUpdate = true;
+            }
+        }
+
+        // برمجة أزرار الكاميرا للعمل الفوري على الهاتف والكمبيوتر
         function changeCameraHeight(delta) {
             var rig = document.getElementById('rig');
             if (!rig) return;
@@ -415,6 +369,10 @@
         bindCamBtn('btn-up-cam', 0.4);
         bindCamBtn('btn-down-cam', -0.4);
 
+        function replayWelcome() {
+            speak(welcomeSpeech);
+        }
+
         var rig = document.getElementById('rig');
         var head = document.getElementById('head');
         var keys = {up: false, down: false, left: false, right: false};
@@ -433,8 +391,10 @@
             b.addEventListener('mouseleave', end);
         }
 
-        setupBtn('up', 'up'); setupBtn('down', 'down');
-        setupBtn('left', 'left'); setupBtn('right', 'right');
+        setupBtn('up', 'up');
+        setupBtn('down', 'down');
+        setupBtn('left', 'left');
+        setupBtn('right', 'right');
 
         setInterval(() => {
             if (!rig || !head) return;
@@ -452,10 +412,133 @@
             if(keys.right){ nextX += Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
 
             if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
-                pos.x = nextX; pos.z = nextZ;
+                pos.x = nextX;
+                pos.z = nextZ;
                 rig.setAttribute('position', pos);
             }
         }, 16);
+
+        async function askTeacher() {
+            const input = document.getElementById('user-input');
+            const chatHistory = document.getElementById('chat-history');
+            const blackboardText = document.getElementById('blackboard-text');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            chatHistory.innerHTML += `<div><b>أنت:</b> ${text}</div>`;
+            input.value = '';
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            let response = await generateTeacherResponse(text);
+
+            chatHistory.innerHTML += `<div style="color:#38bdf8;"><b>المعلم:</b> ${response.speech}</div>`;
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            blackboardText.setAttribute('value', response.boardText);
+            speak(response.speech);
+        }
+
+        function startVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("المتصفح لا يدعم التعرف الصوتي المباشر. استخدم الكتابة.");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ar-SA';
+            const micBtn = document.getElementById('mic-btn');
+            micBtn.style.background = '#22c55e';
+
+            recognition.onresult = function(event) {
+                const text = event.results[0][0].transcript;
+                document.getElementById('user-input').value = text;
+                micBtn.style.background = '#e11d48';
+                askTeacher();
+            };
+
+            recognition.onerror = function() {
+                micBtn.style.background = '#e11d48';
+            };
+
+            recognition.onend = function() {
+                micBtn.style.background = '#e11d48';
+            };
+
+            recognition.start();
+        }
+
+        async function generateTeacherResponse(question) {
+            const level = document.getElementById('edu-level').value;
+            const levelContext = level === 'university' 
+                ? "المستوى الدراسي: جامعة وتخصصات علمية متقدمة. استخدم مفاهيم متقدمة وشرحاً أكاديمياً دقيقاً." 
+                : "المستوى الدراسي: مدرسة تعليم أساسي/ثانوي. استخدم شرحاً بسيطاً ومباشراً وواضحاً للطلاب.";
+
+            if (GEMINI_API_KEY && GEMINI_API_KEY !== "ضع_مفتاح_API_الخاص_بك_هنا") {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{
+                                    text: `أنت معلم فيزياء افتراضي ذكي. ${levelContext} 
+اجب على السؤال التالي باختصار شديد (30 كلمة كحد أقصى) لتناسب الصوت. 
+ثم زودني بعناوين أو معادلة قصيرة جداً للسبورة بالإنجليزية.
+صيغة الرد المطلوبة بدقة هي JSON فقط بدون أي نص إضافي:
+{"speech": "الإجابة الصوتية بالعربية", "boardText": "Nost Text for Board\\nFormula"}`
+                                }, {
+                                    text: `سؤال الطالب: ${question}`
+                                }]
+                            }]
+                        })
+                    });
+
+                    const data = await response.json();
+                    let replyText = data.candidates[0].content.parts[0].text;
+                    replyText = replyText.replace(/```json/g, '').replace(/```/g, '').trim();
+                    const parsed = JSON.parse(replyText);
+                    return parsed;
+                } catch (e) {
+                    console.error("Gemini API Error:", e);
+                }
+            }
+
+            // الرد المحترس في حال عدم إضافة المفتاح
+            const q = question.toLowerCase();
+            if (q.includes('نيوتن') || q.includes('قوة') || q.includes('newton')) {
+                return {
+                    speech: level === 'university' 
+                        ? "وفقاً لميكانيكا نيوتن، فإن القوة هي المعدل الزمني لتغير الزخم الخطي وتساوي حاصل ضرب الكتلة في التسارع."
+                        : "قانون نيوتن الثاني ينص على أن القوة تساوي الكتلة مضروبة في التسارع.",
+                    boardText: "Newton's 2nd Law:\nF = m * a\nF: Force | m: Mass | a: Acc."
+                };
+            } else if (q.includes('سرعة') || q.includes('تسارع') || q.includes('حركة')) {
+                return {
+                    speech: level === 'university'
+                        ? "السرعة المتجهة هي المشتقة الأولى للموقع بالنسبة للزمن، والتسارع هو المشتقة الثانية."
+                        : "السرعة هي معدل تغير المسافة بالنسبة للزمن، والتسارع هو معدل تغير السرعة.",
+                    boardText: level === 'university' ? "Kinematics:\nv = dx/dt\na = dv/dt" : "Motion Equations:\nv = d / t\na = (v2 - v1) / t"
+                };
+            } else {
+                return {
+                    speech: "سؤال ممتاز! في الفيزياء نحول المفاهيم إلى معادلات رياضية لنفهم الكون.",
+                    boardText: `Topic: ${question}\nStatus: Active Discussion`
+                };
+            }
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.95;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
     </script>
 </body>
 </html>
