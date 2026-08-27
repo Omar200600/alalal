@@ -1,469 +1,567 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>فصل الفيزياء الافتراضي - الأستاذ عمر حسان (أكسيس 3D)</title>
-    
-    <!-- مكتبة A-Frame للـ 3D -->
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    
-    <!-- مكتبة KaTeX لتنسيق المعادلات -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>فصل الفيزياء الافتراضي - المعلم الافتراضي (أكسيس 3D)</title>
+    
+    <!-- مكتبة A-Frame للمشهد ثلاثي الأبعاد -->
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
-    <style>
-        .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
+    <!-- مكتبة KaTeX لتنسيق المعادلات والرموز الفيزيائية -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
-        /* شاشة الترحيب والإعداد */
-        #welcome-modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .setup-box {
-            background: rgba(30, 41, 59, 0.9);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #38bdf8;
-            width: 100%;
-            max-width: 360px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            text-align: right;
-        }
-        .setup-box label { font-size: 0.9rem; font-weight: bold; }
-        .setup-box input, .setup-box select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: white;
-            box-sizing: border-box;
-        }
-        #welcome-modal button {
-            background: #22c55e;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-        }
+    <style>
+        .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
 
-        #nav-panel { position: fixed; top: 10px; right: 10px; z-index: 9999; background: white; border: 2px solid #D4AF37; padding: 10px; border-radius: 10px; width: 140px; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
 
-        #chat-panel {
-            position: fixed;
-            bottom: 20px;
-            right: 10px;
-            width: 320px;
-            background: rgba(15, 23, 42, 0.95);
-            border: 2px solid #D4AF37;
-            border-radius: 12px;
-            padding: 12px;
-            color: #fff;
-            font-family: sans-serif;
-            z-index: 9999;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        #chat-panel h3 { margin: 0 0 8px 0; font-size: 14px; color: #38bdf8; text-align: center; }
-        #chat-history {
-            height: 140px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.4);
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            margin-bottom: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .chat-msg { padding: 6px 8px; border-radius: 6px; line-height: 1.4; }
-        .chat-msg.user { background: #0284c7; align-self: flex-end; }
-        .chat-msg.bot { background: #334155; align-self: flex-start; color: #f8fafc; }
+        /* شاشة إعداد الطالب */
+        #setup-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-        .input-box { display: flex; gap: 5px; align-items: center; }
-        input[type="text"] {
-            flex: 1;
-            padding: 8px 10px;
-            border-radius: 6px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            outline: none;
-            font-size: 12px;
-        }
-        .btn-send { background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .btn-mic { background: #e11d48; color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 12px; }
-        .btn-action { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; color: white; }
+        .setup-card {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 16px;
+            border: 2px solid #D4AF37;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
 
-        .control-btn { 
-            position: fixed; 
-            width: 55px; 
-            height: 55px; 
-            background: rgba(212, 175, 55, 0.9); 
-            border: 2px solid white; 
-            border-radius: 50%; 
-            z-index: 9999; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-weight: bold; 
-            touch-action: manipulation; 
-            font-size: 20px; 
-            user-select: none;
-            -webkit-user-select: none;
-        }
-        #up { bottom: 125px; left: 75px; } 
-        #down { bottom: 15px; left: 75px; } 
-        #left { bottom: 70px; left: 15px; } 
-        #right { bottom: 70px; left: 135px; }
-    </style>
+        .setup-card h2 { margin-top: 0; color: #38bdf8; font-size: 1.4rem; }
+        .setup-card p { font-size: 0.9rem; color: #cbd5e1; margin-bottom: 20px; }
+
+        .form-group { text-align: right; margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .btn-start {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+            transition: background 0.2s;
+        }
+        .btn-start:hover { background: #16a34a; }
+
+        /* لوحة التحكم الجانبية */
+        #nav-panel { 
+            position: fixed; 
+            top: 10px; 
+            right: 10px; 
+            z-index: 9999; 
+            background: rgba(15, 23, 42, 0.9); 
+            border: 1px solid #D4AF37; 
+            padding: 10px; 
+            border-radius: 10px; 
+            width: 150px; 
+        }
+
+        .btn-action { 
+            width: 100%; 
+            padding: 8px; 
+            margin-top: 5px; 
+            border-radius: 5px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            color: white; 
+            font-size: 0.85rem;
+        }
+
+        /* لوحة الدردشة والتفاعل */
+        #chat-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 10px;
+            width: 340px;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #D4AF37;
+            border-radius: 12px;
+            padding: 12px;
+            color: #fff;
+            z-index: 9999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .chat-header-info {
+            display: flex;
+            justify-content: space-between;
+            background: #1e293b;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            border: 1px solid #334155;
+        }
+
+        .badge { color: #38bdf8; font-weight: bold; }
+
+        #chat-history {
+            height: 140px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.5);
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .chat-msg { line-height: 1.4; word-break: break-word; }
+        .chat-msg.teacher { color: #38bdf8; }
+        .chat-msg.user { color: #facc15; }
+
+        .input-box { display: flex; gap: 5px; align-items: center; }
+        
+        #user-input {
+            flex: 1;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        .btn-send { background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .btn-mic { background: #e11d48; color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+
+        /* أزرار اللمس للحركة */
+        .control-btn { 
+            position: fixed; 
+            width: 55px; 
+            height: 55px; 
+            background: rgba(212, 175, 55, 0.85); 
+            border: 2px solid white; 
+            border-radius: 50%; 
+            z-index: 9999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            font-weight: bold; 
+            touch-action: manipulation; 
+            font-size: 20px; 
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        #up { bottom: 125px; left: 75px; } 
+        #down { bottom: 15px; left: 75px; } 
+        #left { bottom: 70px; left: 10px; } 
+        #right { bottom: 70px; left: 140px; }
+    </style>
 </head>
 <body>
 
-    <!-- نافذة البدء والتسجيل -->
-    <div id="welcome-modal">
-        <h2>فصل الفيزياء الافتراضي (أكسيس 3D)</h2>
-        <div class="setup-box">
-            <div>
-                <label for="student-name">اسم الطالب/الطالبة:</label>
-                <input type="text" id="student-name" placeholder="أدخل اسمك هنا...">
-            </div>
-            <div>
-                <label for="grade-select">اختر الصف الدراسي (المنهج اليمني):</label>
-                <select id="grade-select">
-                    <option value="الأول الثانوي">الأول الثانوي</option>
-                    <option value="الثاني الثانوي" selected>الثاني الثانوي</option>
-                    <option value="الثالث الثانوي">الثالث الثانوي</option>
-                </select>
-            </div>
-        </div>
-        <button onclick="startClassroom()">دخول الفصل 🚪</button>
-    </div>
+    <!-- شاشة الإعداد والترحيب -->
+    <div id="setup-modal">
+        <div class="setup-card">
+            <h2>المعلم الافتراضي للأستاذ عمر حسان</h2>
+            <p>فصل الفيزياء الافتراضي - منصة أكسيس 3D</p>
+            
+            <div class="form-group">
+                <label for="student-name">اسم الطالب/الطالبة:</label>
+                <input type="text" id="student-name" class="form-control" placeholder="أدخل اسمك الكريم...">
+            </div>
 
-    <div id="nav-panel">
-        <button class="btn-action" style="background:#8B4513;" onclick="window.location.href='corridor.html'">🏃 العودة للممر</button>
-        <button class="btn-action" style="background:#0284c7;" onclick="replayWelcome()">🔊 إعادة الترحيب</button>
-    </div>
+            <div class="form-group">
+                <label for="grade-select">اختر الصف الدراسي (المنهج اليمني):</label>
+                <select id="grade-select" class="form-control">
+                    <option value="grade1">الأول الثانوي</option>
+                    <option value="grade2" selected>الثاني الثانوي</option>
+                    <option value="grade3">الثالث الثانوي</option>
+                </select>
+            </div>
 
-    <div id="chat-panel">
-        <h3>👨‍🏫 المعلم الافتراضي للأستاذ عمر حسان</h3>
-        <div id="chat-history"></div>
-        <div class="input-box">
-            <input type="text" id="user-input" placeholder="اسأل المعلم..." onkeydown="if(event.key==='Enter') askTeacher()">
-            <button class="btn-mic" id="mic-btn" onclick="startVoiceInput()" title="تحدث بصوتك">🎙️</button>
-            <button class="btn-send" onclick="askTeacher()">إرسال</button>
-        </div>
-    </div>
+            <button class="btn-start" onclick="startClassroom()">دخول الفصل والبدء 🚪</button>
+        </div>
+    </div>
 
-    <!-- أزرار الحركة -->
-    <div id="up" class="control-btn">↑</div>
-    <div id="down" class="control-btn">↓</div>
-    <div id="left" class="control-btn">←</div>
-    <div id="right" class="control-btn">→</div>
+    <!-- لوحة التنقل والتفاعل العلوي -->
+    <div id="nav-panel">
+        <button class="btn-action" style="background:#8B4513;" onclick="window.location.href='corridor.html'">🏃 العودة للممر</button>
+        <button class="btn-action" style="background:#0284c7;" onclick="replayWelcome()">🔊 إعادة الترحيب</button>
+    </div>
 
-    <canvas id="videoCanvas" width="512" height="768" style="display:none;"></canvas>
+    <!-- لوحة الدردشة الذكية -->
+    <div id="chat-panel">
+        <div class="chat-header-info">
+            <span id="student-badge" class="badge">الطالب: -</span>
+            <span id="grade-badge" class="badge">الصف: -</span>
+        </div>
+        <div id="chat-history"></div>
+        <div class="input-box">
+            <input type="text" id="user-input" placeholder="اسأل المعلم عن أي قانون أو مفهوم..." onkeydown="if(event.key==='Enter') askTeacher()">
+            <button class="btn-mic" id="mic-btn" onclick="startVoiceInput()" title="تحدث بصوتك">🎙️</button>
+            <button class="btn-send" onclick="askTeacher()">إرسال</button>
+        </div>
+    </div>
 
-    <!-- مشهد الـ 3D -->
-    <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
-        <a-assets>
-            <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
-            <img id="marbleTile" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" crossorigin="anonymous">
-        </a-assets>
+    <!-- أزرار الحركة -->
+    <div id="up" class="control-btn">↑</div>
+    <div id="down" class="control-btn">↓</div>
+    <div id="left" class="control-btn">←</div>
+    <div id="right" class="control-btn">→</div>
 
-        <!-- الإضاءة -->
-        <a-entity light="type: ambient; color: #FFF; intensity: 3.0"></a-entity>
-        <a-entity light="type: directional; color: #FFF; intensity: 1.5" position="-1 5 2"></a-entity>
+    <canvas id="videoCanvas" width="512" height="768" style="display:none;"></canvas>
 
-        <!-- الغرفة -->
-        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" src="#marbleTile" repeat="8 8" material="shader: flat; roughness: 0.2;"></a-plane> 
-        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
-        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
-        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" material="shader: flat;"></a-box> 
-        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" material="shader: flat;"></a-box> 
-        <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#FFFFFF" material="shader: flat;"></a-box> 
+    <!-- مشهد الفصل الدراسي 3D -->
+    <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
+        
+        <a-assets>
+            <video id="teacherVideo" src="teacher-video.mp4" loop autoplay muted playsinline webkit-playsinline crossorigin="anonymous"></video>
+            <img id="marbleTile" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" crossorigin="anonymous">
+        </a-assets>
 
-        <!-- اللافتة والسبورة -->
-        <a-box position="0 6.5 -9.8" width="7" height="1" depth="0.1" color="#8B4513" material="shader: flat;">
-            <a-text value="PHYSICS CLASSROOM 101" align="center" position="0 0 0.1" color="#D4AF37" width="10"></a-text>
-        </a-box>
+        <!-- إضاءة المشهد -->
+        <a-entity light="type: ambient; color: #FFF; intensity: 3.0"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 1.5" position="-1 5 2"></a-entity>
 
-        <a-box position="1 3.8 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
-        <a-box position="1 3.8 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
-            <a-text id="blackboard-text" value="Welcome to Physics Class!\nWaiting for your questions..." position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
-        </a-box>
+        <!-- الأرضية والجدران -->
+        <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" src="#marbleTile" repeat="8 8" material="shader: flat; roughness: 0.2;"></a-plane> 
+        
+        <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
+        <a-box position="0 4 10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
+        <a-box position="-10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" material="shader: flat;"></a-box> 
+        <a-box position="10 4 0" width="0.2" height="8" depth="20" color="#F5F5DC" material="shader: flat;"></a-box> 
+        
+        <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#FFFFFF" material="shader: flat;"></a-box> 
 
-        <!-- أفتار المعلم الكروما -->
-        <a-entity id="teacher-avatar-container" position="-4.5 2.5 -9.5">
-            <a-plane id="avatarBox" width="2.8" height="4.2" material="shader: flat; transparent: true; side: double;"></a-plane>
-            <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
-        </a-entity>
+        <!-- لافتة الفصل -->
+        <a-box position="0 6.5 -9.8" width="7" height="1" depth="0.1" color="#8B4513" material="shader: flat;">
+            <a-text value="PHYSICS CLASSROOM 101" align="center" position="0 0 0.1" color="#D4AF37" width="10"></a-text>
+        </a-box>
 
-        <!-- الكراسي -->
-        <a-entity id="chairs-matrix">
-            <a-entity position="-5 0 -2" rotation="0 180 0">
-                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
-                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
-                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
-                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
-            </a-entity>
-            <a-entity position="5 0 -2" rotation="0 180 0">
-                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
-                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
-                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
-                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
-            </a-entity>
-        </a-entity>
+        <!-- السبورة -->
+        <a-box position="1 3.8 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
+        <a-box position="1 3.8 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
+            <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
+        </a-box>
 
-        <!-- الكاميرا -->
-        <a-entity id="rig" position="0 3.5 3">
-            <a-entity id="head" camera look-controls></a-entity>
-        </a-entity>
-    </a-scene>
+        <!-- أفتار المعلم الكروما -->
+        <a-entity id="teacher-avatar-container" position="-4.5 2.5 -9.5">
+            <a-plane id="avatarBox" width="2.8" height="4.2" material="shader: flat; transparent: true; side: double;"></a-plane>
+            <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
+        </a-entity>
 
-    <script>
-        // ==========================================
-        // 🔑 مكان مفتاح GEMINI API 
-        // ==========================================
-        const GEMINI_API_KEY = " curl "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent" \
-  -H 'Content-Type: application/json' \
-  -H 'X-goog-api-key: AQ.Ab8RN6KPXBljSxIqfVaKSEPYPuBFE8RuW2tDwMxg_re3BuaD6w' \
-  -X POST \
-  -d '{
-    "contents": [
-      {
-        "parts": [
-          {
-            "text": "Explain how AI works in a few words"
-          }
-        ]
-      }
-    ]
-  }'";
+        <!-- الكراسي -->
+        <a-entity id="chairs-matrix">
+            <!-- الصف الأيسر -->
+            <a-entity position="-5 0 -2" rotation="0 180 0">
+                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
+            </a-entity>
+            <a-entity position="-5 0 2" rotation="0 180 0">
+                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
+            </a-entity>
 
-        let studentState = { name: "", grade: "" };
-        var video = document.getElementById('teacherVideo');
-        var canvas = document.getElementById('videoCanvas');
-        var ctx = canvas.getContext('2d');
-        var avatarBox = document.getElementById('avatarBox');
-        var canvasTexture = null;
+            <!-- الصف الأيمن -->
+            <a-entity position="5 0 -2" rotation="0 180 0">
+                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
+            </a-entity>
+            <a-entity position="5 0 2" rotation="0 180 0">
+                <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
+                <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
+            </a-entity>
+        </a-entity>
 
-        function startClassroom() {
-            const nameInput = document.getElementById("student-name").value.trim();
-            const gradeInput = document.getElementById("grade-select").value;
+        <!-- الكاميرا -->
+        <a-entity id="rig" position="0 3.5 3">
+            <a-entity id="head" camera look-controls></a-entity>
+        </a-entity>
+    </a-scene>
 
-            if (!nameInput) return alert("يرجى إدخال اسم الطالب أولاً.");
+    <script>
+        // مفتاح Gemini API
+        const GEMINI_API_KEY = "AQ.Ab8RN6KWF3NrGneFjuZYVZEHgXSfd1GobJynRSgkiRE8nmh--g";
 
-            studentState.name = nameInput;
-            studentState.grade = gradeInput;
+        let state = { studentName: "", grade: "", gradeLabel: "" };
 
-            document.getElementById('welcome-modal').style.display = 'none';
+        var video = document.getElementById('teacherVideo');
+        var canvas = document.getElementById('videoCanvas');
+        var ctx = canvas.getContext('2d');
+        var avatarBox = document.getElementById('avatarBox');
+        var canvasTexture = null;
 
-            video.muted = true;
-            video.play().catch(e => console.log(e));
+        let welcomeSpeech = "";
 
-            const welcomeMsg = `أهلاً بك يا ${studentState.name}! أنا المساعد الافتراضي للأستاذ عمر حسان لمادة الفيزياء للصف (${studentState.grade}). كيف يمكنني مساعدتك اليوم؟`;
-            appendChatMessage("bot", welcomeMsg);
-            speak(welcomeMsg);
+        function startClassroom() {
+            const nameInput = document.getElementById("student-name").value.trim();
+            const gradeInput = document.getElementById("grade-select").value;
 
-            // إعداد تفريغ الكروما
-            canvasTexture = new THREE.CanvasTexture(canvas);
-            var mesh = avatarBox.getObject3D('mesh');
-            if (mesh) {
-                mesh.material.map = canvasTexture;
-                mesh.material.transparent = true;
-                mesh.material.needsUpdate = true;
-            }
+            if (!nameInput) return alert("يرجى إدخال اسم الطالب أولاً.");
 
-            function processFrame() {
-                if (!video.paused && !video.ended) {
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    var l = frame.data.length / 4;
-                    for (var i = 0; i < l; i++) {
-                        var r = frame.data[i * 4 + 0], g = frame.data[i * 4 + 1], b = frame.data[i * 4 + 2];
-                        if (g > 90 && r < 140 && b < 140 && g > r * 1.1) {
-                            frame.data[i * 4 + 3] = 0;
-                        }
-                    }
-                    ctx.putImageData(frame, 0, 0);
-                    if (canvasTexture) canvasTexture.needsUpdate = true;
-                }
-                requestAnimationFrame(processFrame);
-            }
-            processFrame();
-        }
+            state.studentName = nameInput;
+            state.grade = gradeInput;
 
-        function replayWelcome() {
-            const welcomeMsg = `أهلاً بك مجدداً يا ${studentState.name}! أنا جاهز لجميع أسئلتك في الفيزياء.`;
-            speak(welcomeMsg);
-        }
+            const gradeNames = { 'grade1': 'الأول الثانوي', 'grade2': 'الثاني الثانوي', 'grade3': 'الثالث الثانوي' };
+            state.gradeLabel = gradeNames[state.grade];
 
-        // أزرار التحكم بالحركة
-        var rig = document.getElementById('rig');
-        var head = document.getElementById('head');
-        var keys = {up: false, down: false, left: false, right: false};
+            document.getElementById("student-badge").innerText = `الطالب: ${state.studentName}`;
+            document.getElementById("grade-badge").innerText = `الصف: ${state.gradeLabel}`;
 
-        function setupBtn(id, k) {
-            var b = document.getElementById(id);
-            if (!b) return;
-            var start = (e) => { e.preventDefault(); keys[k] = true; };
-            var end = (e) => { e.preventDefault(); keys[k] = false; };
-            b.addEventListener('touchstart', start, {passive: false});
-            b.addEventListener('touchend', end, {passive: false});
-            b.addEventListener('mousedown', start);
-            b.addEventListener('mouseup', end);
-            b.addEventListener('mouseleave', end);
-        }
+            document.getElementById('setup-modal').style.display = 'none';
 
-        setupBtn('up', 'up'); setupBtn('down', 'down'); setupBtn('left', 'left'); setupBtn('right', 'right');
+            video.muted = true;
+            video.play().catch(e => console.log(e));
 
-        setInterval(() => {
-            if (!rig || !head) return;
-            var pos = rig.getAttribute('position');
-            var rot = head.getAttribute('rotation');
-            var ang = rot.y * Math.PI / 180;
-            var s = 0.35;
-            let nextX = pos.x, nextZ = pos.z;
+            welcomeSpeech = `أهلاً بك يا ${state.studentName} في فصل الفيزياء الافتراضي للصف ${state.gradeLabel} (المنهج اليمني). أنا معلمك الافتراضي للأستاذ عمر حسان، أنا جاهز لإجابة أسئلتك!`;
 
-            if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
-            if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
-            if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
-            if(keys.right){ nextX += Math.cos(ang)*s; nextZ -= Math.sin(ang)*s; }
+            appendChatMessage("teacher", welcomeSpeech);
 
-            if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
-                pos.x = nextX; pos.z = nextZ;
-                rig.setAttribute('position', pos);
-            }
-        }, 16);
+            setTimeout(() => { speak(welcomeSpeech); }, 500);
 
-        // إضافة الرسائل لمرئيات الشات
-        function appendChatMessage(sender, text) {
-            const history = document.getElementById('chat-history');
-            const msg = document.createElement('div');
-            msg.className = `chat-msg ${sender}`;
-            msg.innerText = text;
-            history.appendChild(msg);
-            history.scrollTop = history.scrollHeight;
-        }
+            // تفريغ كروما الفيديو
+            canvasTexture = new THREE.CanvasTexture(canvas);
+            var mesh = avatarBox.getObject3D('mesh');
+            if (mesh) {
+                mesh.material.map = canvasTexture;
+                mesh.material.transparent = true;
+                mesh.material.needsUpdate = true;
+            }
 
-        // إرسال السؤال ومعالجته عبر الذكاء الاصطناعي Gemini
-        async function askTeacher() {
-            const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            if (!text) return;
+            function processFrame() {
+                if (!video.paused && !video.ended) {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    var l = frame.data.length / 4;
 
-            appendChatMessage("user", text);
-            input.value = '';
+                    for (var i = 0; i < l; i++) {
+                        var r = frame.data[i * 4 + 0];
+                        var g = frame.data[i * 4 + 1];
+                        var b = frame.data[i * 4 + 2];
 
-            appendChatMessage("bot", "جاري التفكير والأجابة...");
+                        if (g > 90 && r < 140 && b < 140 && g > r * 1.1) {
+                            frame.data[i * 4 + 3] = 0;
+                        }
+                    }
+                    ctx.putImageData(frame, 0, 0);
+                    if (canvasTexture) canvasTexture.needsUpdate = true;
+                }
+                requestAnimationFrame(processFrame);
+            }
+            processFrame();
+        }
 
-            try {
-                const aiResponse = await fetchGeminiApi(text);
-                
-                // إزالة رسالة "جاري التفكير"
-                const history = document.getElementById('chat-history');
-                history.removeChild(history.lastChild);
+        function replayWelcome() {
+            if (welcomeSpeech) speak(welcomeSpeech);
+        }
 
-                appendChatMessage("bot", aiResponse);
+        // تحكم حركة الكاميرا (أزرار 3D)
+        var rig = document.getElementById('rig');
+        var head = document.getElementById('head');
+        var keys = {up: false, down: false, left: false, right: false};
 
-                // تحديث النص على السبورة 3D
-                document.getElementById('blackboard-text').setAttribute('value', text + "\n---\n" + aiResponse.substring(0, 80) + "...");
+        function setupBtn(id, k) {
+            var b = document.getElementById(id);
+            if (!b) return;
 
-                // نطق الإجابة صوتاً
-                speak(aiResponse);
+            var start = (e) => { e.preventDefault(); keys[k] = true; };
+            var end = (e) => { e.preventDefault(); keys[k] = false; };
 
-            } catch (err) {
-                console.error(err);
-                const history = document.getElementById('chat-history');
-                history.removeChild(history.lastChild);
-                appendChatMessage("bot", "عذراً، حدث خطأ أثناء الاتصال بالمعلم الذكي.");
-            }
-        }
+            b.addEventListener('touchstart', start, {passive: false});
+            b.addEventListener('touchend', end, {passive: false});
+            b.addEventListener('mousedown', start);
+            b.addEventListener('mouseup', end);
+            b.addEventListener('mouseleave', end);
+        }
 
-        // الاتصال بـ Gemini API
-        async function fetchGeminiApi(userMessage) {
-            const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان لمادة الفيزياء (المنهج اليمني).
-تتحدث مع الطالب (${studentState.name}) في صف (${studentState.grade}).
+        setupBtn('up', 'up');
+        setupBtn('down', 'down');
+        setupBtn('left', 'left');
+        setupBtn('right', 'right');
+
+        setInterval(() => {
+            if (!rig || !head) return;
+            var pos = rig.getAttribute('position');
+            var rot = head.getAttribute('rotation');
+            var ang = rot.y * Math.PI / 180;
+            var s = 0.35;
+            
+            let nextX = pos.x;
+            let nextZ = pos.z;
+
+            if(keys.up){ nextX -= Math.sin(ang)*s; nextZ -= Math.cos(ang)*s; }
+            if(keys.down){ nextX += Math.sin(ang)*s; nextZ += Math.cos(ang)*s; }
+            if(keys.left){ nextX -= Math.cos(ang)*s; nextZ += Math.sin(ang)*s; }
+            if(keys.right){ nextX += Math.cos(ang)*s; nextZ -= Math.sin(ang)*s; }
+
+            if (nextX > -9.0 && nextX < 9.0 && nextZ > -9.0 && nextZ < 9.0) {
+                pos.x = nextX;
+                pos.z = nextZ;
+                rig.setAttribute('position', pos);
+            }
+        }, 16);
+
+        // وظائف الدردشة التفاعلية مع Gemini AI و KaTeX
+        function appendChatMessage(sender, text) {
+            const chatHistory = document.getElementById('chat-history');
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `chat-msg ${sender}`;
+            
+            const prefix = sender === 'teacher' ? '<b>المعلم:</b> ' : '<b>أنت:</b> ';
+            msgDiv.innerHTML = prefix + text.replace(/\n/g, "<br>");
+            
+            chatHistory.appendChild(msgDiv);
+
+            renderMathInElement(msgDiv, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError: false
+            });
+
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        async function askTeacher() {
+            const input = document.getElementById('user-input');
+            const blackboardText = document.getElementById('blackboard-text');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            appendChatMessage("user", text);
+            input.value = '';
+
+            appendChatMessage("teacher", "<i id='loading'>جاري التفكير والأجابة...</i>");
+
+            try {
+                const aiResponse = await fetchGeminiApi(text);
+                const loadingElem = document.getElementById('loading');
+                if (loadingElem) loadingElem.parentElement.remove();
+
+                appendChatMessage("teacher", aiResponse);
+
+                // تنظيف النص للسبورة والصوت
+                const cleanText = aiResponse.replace(/[*#$]/g, '');
+                const boardSnippet = cleanText.length > 80 ? cleanText.substring(0, 80) + '...' : cleanText;
+                
+                blackboardText.setAttribute('value', `Topic: ${text}\n${boardSnippet}`);
+                speak(cleanText);
+
+            } catch (err) {
+                const loadingElem = document.getElementById('loading');
+                if (loadingElem) loadingElem.parentElement.remove();
+                appendChatMessage("teacher", `<b>تنبيه:</b> ${err.message}`);
+            }
+        }
+
+        async function fetchGeminiApi(userMessage) {
+            const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان لمادة الفيزياء (المنهج اليمني).
+تتحدث مع الطالب (${state.studentName}) في صف (${state.gradeLabel}).
 القواعد:
 1. اشرح المفهوم الفيزيائي بدقة ووضوح وبأسلوب تربوي مبسط وفق المنهج اليمني.
-2. اجعل الإجابة مختصرة وواضحة لتناسب العرض والصوت.
-3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان.`;
+2. نسّق القوانين بفرمتة KaTeX مثل $F = m \\cdot a$ أو $\\tau = F \\cdot d$.
+3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان وبإيجاز مناسب للشات.`;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-            const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: [{ parts: [{ text: userMessage }] }]
-                })
-            });
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    system_instruction: { parts: [{ text: systemPrompt }] },
+                    contents: [{ parts: [{ text: userMessage }] }]
+                })
+            });
 
-            const data = await res.json();
-            if (data.error) throw new Error(data.error.message || "خطأ API");
+            const data = await res.json();
+            if (data.error) throw new Error(data.error.message || "خطأ في الاتصال بالذكاء الاصطناعي.");
+            return data.candidates[0].content.parts[0].text;
+        }
 
-            return data.candidates[0].content.parts[0].text;
-        }
+        // التعرف الصوتي المباشر
+        function startVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("المتصفح لا يدعم التعرف الصوتي المباشر. استخدم الكتابة.");
+                return;
+            }
 
-        // التعرف الصوتي
-        function startVoiceInput() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return alert("المتصفح لا يدعم التعرف الصوتي.");
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ar-SA';
+            const micBtn = document.getElementById('mic-btn');
+            micBtn.style.background = '#22c55e';
 
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ar-SA';
-            const micBtn = document.getElementById('mic-btn');
-            micBtn.style.background = '#22c55e';
+            recognition.onresult = function(event) {
+                const text = event.results[0][0].transcript;
+                document.getElementById('user-input').value = text;
+                micBtn.style.background = '#e11d48';
+                askTeacher();
+            };
 
-            recognition.onresult = function(event) {
-                document.getElementById('user-input').value = event.results[0][0].transcript;
-                micBtn.style.background = '#e11d48';
-                askTeacher();
-            };
+            recognition.onerror = function() { micBtn.style.background = '#e11d48'; };
+            recognition.onend = function() { micBtn.style.background = '#e11d48'; };
 
-            recognition.onerror = recognition.onend = function() {
-                micBtn.style.background = '#e11d48';
-            };
+            recognition.start();
+        }
 
-            recognition.start();
-        }
-
-        // محرك تحويل النص إلى صوت
-        function speak(text) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                // تنظيف النص من الرموز البرمجية للنطق السليم
-                const cleanText = text.replace(/[*_#$`]/g, '');
-                const utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.lang = 'ar-SA';
-                utterance.rate = 0.95;
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-    </script>
+        // تحويل النص إلى صوت
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ar-SA';
+                utterance.rate = 0.95;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+    </script>
 </body>
 </html>
-
