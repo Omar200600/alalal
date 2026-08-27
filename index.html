@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>فصل الفيزياء الافتراضي - المعلم الافتراضي (أكسيس 3D)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>فصل الفيزياء الافتراضي - منصة أكسيس 3D</title>
     
     <!-- مكتبة A-Frame للمشهد ثلاثي الأبعاد -->
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
@@ -14,45 +14,60 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 
     <style>
-        .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { display: none !important; visibility: hidden !important; pointer-events: none !important; }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            overflow: hidden;
+        /* إخفاء واجهات VR الافتراضية لمنع تداخلها */
+        .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { 
+            display: none !important; 
+            visibility: hidden !important; 
+            pointer-events: none !important; 
         }
 
-        /* شاشة إعداد الطالب */
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+        }
+
+        /* 1. شاشة الترحيب والإعداد (Modal) فوق الجميع */
         #setup-modal {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 99999;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.96);
+            z-index: 100000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: white;
-            text-align: center;
-            padding: 20px;
-            box-sizing: border-box;
+            padding: 15px;
         }
 
         .setup-card {
             background: #1e293b;
-            padding: 30px;
+            padding: 25px;
             border-radius: 16px;
             border: 2px solid #D4AF37;
-            max-width: 420px;
+            max-width: 400px;
             width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
-        .setup-card h2 { margin-top: 0; color: #38bdf8; font-size: 1.4rem; }
-        .setup-card p { font-size: 0.9rem; color: #cbd5e1; margin-bottom: 20px; }
+        .setup-card h2 { margin: 0 0 8px 0; color: #38bdf8; font-size: 1.3rem; }
+        .setup-card p { font-size: 0.85rem; color: #cbd5e1; margin-bottom: 15px; }
 
-        .form-group { text-align: right; margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+        .form-group { text-align: right; margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: bold; font-size: 0.85rem; }
         
         .form-control {
             width: 100%;
@@ -61,16 +76,17 @@
             border: 1px solid #334155;
             background: #0f172a;
             color: white;
-            font-size: 1rem;
-            box-sizing: border-box;
+            font-size: 0.95rem;
             outline: none;
+            user-select: text;
+            -webkit-user-select: text;
         }
 
         .btn-start {
             background: #22c55e;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px;
             font-size: 1rem;
             font-weight: bold;
             border-radius: 8px;
@@ -78,120 +94,137 @@
             width: 100%;
             margin-top: 10px;
             box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
-            transition: background 0.2s;
         }
-        .btn-start:hover { background: #16a34a; }
 
-        /* لوحة التحكم الجانبية */
+        /* 2. لوحة العودة وإعادة الترحيب (علوي يمين) */
         #nav-panel { 
             position: fixed; 
             top: 10px; 
             right: 10px; 
-            z-index: 9999; 
-            background: rgba(15, 23, 42, 0.9); 
+            z-index: 99999; 
+            background: rgba(15, 23, 42, 0.85); 
             border: 1px solid #D4AF37; 
-            padding: 10px; 
+            padding: 8px; 
             border-radius: 10px; 
-            width: 150px; 
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            backdrop-filter: blur(4px);
         }
 
         .btn-action { 
-            width: 100%; 
-            padding: 8px; 
-            margin-top: 5px; 
-            border-radius: 5px; 
+            padding: 6px 12px; 
+            border-radius: 6px; 
             border: none; 
             cursor: pointer; 
             font-weight: bold; 
             color: white; 
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
 
-        /* لوحة الدردشة والتفاعل */
+        /* 3. لوحة الدردشة والتفاعل (سفلي يمين) */
         #chat-panel {
             position: fixed;
-            bottom: 20px;
+            bottom: 15px;
             right: 10px;
-            width: 340px;
-            background: rgba(15, 23, 42, 0.95);
+            width: 320px;
+            max-width: calc(100vw - 20px);
+            background: rgba(15, 23, 42, 0.9);
             border: 2px solid #D4AF37;
             border-radius: 12px;
-            padding: 12px;
+            padding: 10px;
             color: #fff;
-            z-index: 9999;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            z-index: 99999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
         }
 
         .chat-header-info {
             display: flex;
             justify-content: space-between;
             background: #1e293b;
-            padding: 6px 10px;
+            padding: 4px 8px;
             border-radius: 6px;
-            font-size: 0.8rem;
-            margin-bottom: 8px;
+            font-size: 0.75rem;
+            margin-bottom: 6px;
             border: 1px solid #334155;
         }
 
         .badge { color: #38bdf8; font-weight: bold; }
 
         #chat-history {
-            height: 140px;
+            height: 110px;
             overflow-y: auto;
-            background: rgba(0,0,0,0.5);
-            padding: 8px;
+            background: rgba(0,0,0,0.6);
+            padding: 6px;
             border-radius: 6px;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
             border: 1px solid rgba(255,255,255,0.1);
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
+            user-select: text;
+            -webkit-user-select: text;
         }
 
-        .chat-msg { line-height: 1.4; word-break: break-word; }
+        .chat-msg { line-height: 1.3; word-break: break-word; }
         .chat-msg.teacher { color: #38bdf8; }
         .chat-msg.user { color: #facc15; }
 
-        .input-box { display: flex; gap: 5px; align-items: center; }
+        .input-box { display: flex; gap: 4px; align-items: center; }
         
         #user-input {
             flex: 1;
-            padding: 8px 10px;
+            padding: 8px;
             border-radius: 6px;
             border: 1px solid #334155;
             background: #0f172a;
             color: #fff;
             outline: none;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            user-select: text;
+            -webkit-user-select: text;
         }
 
-        .btn-send { background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
-        .btn-mic { background: #e11d48; color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+        .btn-send { background: #0284c7; color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .btn-mic { background: #e11d48; color: white; border: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
 
-        /* أزرار اللمس للحركة */
+        /* 4. أزرار الحركة والتوجيه (سفلي يسار) */
         .control-btn { 
             position: fixed; 
-            width: 55px; 
-            height: 55px; 
+            width: 48px; 
+            height: 48px; 
             background: rgba(212, 175, 55, 0.85); 
             border: 2px solid white; 
             border-radius: 50%; 
-            z-index: 9999; 
+            z-index: 99999; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             color: white; 
             font-weight: bold; 
             touch-action: manipulation; 
-            font-size: 20px; 
-            user-select: none;
-            -webkit-user-select: none;
+            font-size: 18px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
-        #up { bottom: 125px; left: 75px; } 
-        #down { bottom: 15px; left: 75px; } 
-        #left { bottom: 70px; left: 10px; } 
-        #right { bottom: 70px; left: 140px; }
+        #up { bottom: 105px; left: 60px; } 
+        #down { bottom: 10px; left: 60px; } 
+        #left { bottom: 58px; left: 10px; } 
+        #right { bottom: 58px; left: 110px; }
+
+        /* تحسين التنسيق عند تدوير الهاتف للوضع الأفقي */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            #chat-panel { width: 260px; bottom: 5px; right: 5px; padding: 6px; }
+            #chat-history { height: 60px; font-size: 0.75rem; }
+            .control-btn { width: 38px; height: 38px; font-size: 14px; }
+            #up { bottom: 75px; left: 45px; } 
+            #down { bottom: 5px; left: 45px; } 
+            #left { bottom: 40px; left: 5px; } 
+            #right { bottom: 40px; left: 85px; }
+            #nav-panel { top: 5px; right: 5px; padding: 4px; }
+            .btn-action { padding: 4px 8px; font-size: 0.7rem; }
+        }
     </style>
 </head>
 <body>
@@ -234,7 +267,7 @@
         </div>
         <div id="chat-history"></div>
         <div class="input-box">
-            <input type="text" id="user-input" placeholder="اسأل المعلم عن أي قانون أو مفهوم..." onkeydown="if(event.key==='Enter') askTeacher()">
+            <input type="text" id="user-input" placeholder="اسأل المعلم عن أي قانون..." onkeydown="if(event.key==='Enter') askTeacher()">
             <button class="btn-mic" id="mic-btn" onclick="startVoiceInput()" title="تحدث بصوتك">🎙️</button>
             <button class="btn-send" onclick="askTeacher()">إرسال</button>
         </div>
@@ -289,7 +322,6 @@
 
         <!-- الكراسي -->
         <a-entity id="chairs-matrix">
-            <!-- الصف الأيسر -->
             <a-entity position="-5 0 -2" rotation="0 180 0">
                 <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
                 <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
@@ -303,7 +335,6 @@
                 <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
             </a-entity>
 
-            <!-- الصف الأيمن -->
             <a-entity position="5 0 -2" rotation="0 180 0">
                 <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
                 <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
@@ -318,17 +349,15 @@
             </a-entity>
         </a-entity>
 
-        <!-- الكاميرا: تم رفع ارتفاعها إلى 4.8 لتصبح بمستوى عين المعلم الافتراضي مباشرة -->
+        <!-- الكاميرا بارتفاع 4.8 لتكون بمستوى نظر المعلم -->
         <a-entity id="rig" position="0 4.8 3">
             <a-entity id="head" camera look-controls></a-entity>
         </a-entity>
     </a-scene>
 
     <script>
-        /* ========================================================= */
-        /* === ضع مفتاح API الخاص بك هنا بين العلامتين "" === */
-        /* ========================================================= */
-        const مفتاح_الذكاء_الاصطناعي = "AQ.Ab8RN6K9ugJm4_TXDW9nqyQiKMOMVJJFtSI7VxLgMYMsiElyd";
+        /* === المفتاح الخاص بك تم إدراجه هنا === */
+        const مفتاح_الذكاء_الاصطناعي = "AQ.Ab8RN6LLKnjdsnm1uFDeoAjFcRVY2MrurI3XOmVvqB4h27H1NQ";
 
         let state = { studentName: "", grade: "", gradeLabel: "" };
 
