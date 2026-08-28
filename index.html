@@ -37,7 +37,7 @@
             background-color: #000;
         }
 
-        /* 1. شاشة الترحيب والإعداد (Modal) فوق الجميع */
+        /* 1. شاشة الترحيب والإعداد فوق الجميع */
         #setup-modal {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -122,7 +122,7 @@
             font-size: 0.75rem;
         }
 
-        /* 3. لوحة الدردشة والتفاعل المصغرة الثابتة (سفلي يمين - تعديل الأبعاد والموقع) */
+        /* 3. لوحة الدردشة والتفاعل المصغرة (سفلي يمين) */
         #chat-panel {
             position: fixed;
             bottom: 20px;
@@ -190,7 +190,7 @@
         .btn-send { background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
         .btn-mic { background: #e11d48; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
 
-        /* 4. أزرار الحركة والتوجيه (سفلي يسار - مفصولة لمنع التداخل) */
+        /* 4. أزرار الحركة والتوجيه (سفلي يسار) */
         .control-btn { 
             position: fixed; 
             width: 48px; 
@@ -284,7 +284,6 @@
     <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
         
         <a-assets>
-            <!-- إخفاء/كتم صوت الفيديو الأصلي لمنع التداخل مع صوت الذكاء الاصطناعي -->
             <video id="teacherVideo" src="teacher-video.mp4" loop playsinline webkit-playsinline crossorigin="anonymous" muted></video>
             <img id="marbleTile" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" crossorigin="anonymous">
         </a-assets>
@@ -314,7 +313,7 @@
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- أفتار المعلم الكروما (تم إنزاله ليكون متصل بالأرضية تماماً) -->
+        <!-- أفتار المعلم الكروما -->
         <a-entity id="teacher-avatar-container" position="-4.5 2.1 -9.5">
             <a-plane id="avatarBox" width="2.8" height="4.2" material="shader: flat; transparent: true; side: double;"></a-plane>
             <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
@@ -334,7 +333,6 @@
                 <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
                 <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
             </a-entity>
-
             <a-entity position="5 0 -2" rotation="0 180 0">
                 <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
                 <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
@@ -349,17 +347,15 @@
             </a-entity>
         </a-entity>
 
-        <!-- الكاميرا (تم رفع مستوى الرؤية للارتفاع المناسب الطبيعي) -->
-        <a-entity id="rig" position="0 2.2 3">
+        <!-- الكاميرا: تم ترفيع الارتفاع إلى 3.0 لرؤية أفضل -->
+        <a-entity id="rig" position="0 3.0 3">
             <a-entity id="head" camera look-controls></a-entity>
         </a-entity>
     </a-scene>
 
     <script>
-        // === مكان مفتاح الـ API للذكاء الاصطناعي (يمكنك التعديل عليه هنا) ===
-        const aiApiKey = 
- "AIzaSyAQ.Ab8RN6LpUDbYw3V0Qfg-3YuV7X2XlFJWPRB8TWHKPEkMEqyJvA";
- ";
+        // === مفتاح الـ API الخاص بك تم تصحيح رموزه وصيغته ===
+        const aiApiKey = "AIzaSyAQAb8RN6LpUDbYw3V0Qfg-3YuV7X2XlFJWPRB8TWHKPEkMEqyJvA";
 
         let state = { studentName: "", grade: "", gradeLabel: "" };
 
@@ -375,7 +371,10 @@
             const nameInput = document.getElementById("student-name").value.trim();
             const gradeInput = document.getElementById("grade-select").value;
 
-            if (!nameInput) return alert("يرجى إدخال اسم الطالب أولاً.");
+            if (!nameInput) {
+                alert("يرجى إدخال اسم الطالب أولاً.");
+                return;
+            }
 
             state.studentName = nameInput;
             state.grade = gradeInput;
@@ -388,7 +387,6 @@
 
             document.getElementById('setup-modal').style.display = 'none';
 
-            // كتم صوت الفيديو تماماً وضمان تشغيله كصورة فقط
             video.muted = true;
             video.play().catch(e => console.log(e));
 
@@ -397,7 +395,6 @@
             appendChatMessage("teacher", welcomeSpeech);
             setTimeout(() => { speak(welcomeSpeech); }, 300);
 
-            // تفريغ كروما الفيديو
             canvasTexture = new THREE.CanvasTexture(canvas);
             var mesh = avatarBox.getObject3D('mesh');
             if (mesh) {
@@ -489,13 +486,15 @@
             
             chatHistory.appendChild(msgDiv);
 
-            renderMathInElement(msgDiv, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ],
-                throwOnError: false
-            });
+            if (window.renderMathInElement) {
+                renderMathInElement(msgDiv, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
 
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }
@@ -515,7 +514,7 @@
             try {
                 const aiResponse = await fetchGeminiApi(text);
                 const loadingElem = document.getElementById('loading');
-                if (loadingElem) loadingElem.parentElement.remove();
+                if (loadingElem && loadingElem.parentElement) loadingElem.parentElement.remove();
 
                 appendChatMessage("teacher", aiResponse);
 
@@ -527,7 +526,7 @@
 
             } catch (err) {
                 const loadingElem = document.getElementById('loading');
-                if (loadingElem) loadingElem.parentElement.remove();
+                if (loadingElem && loadingElem.parentElement) loadingElem.parentElement.remove();
                 appendChatMessage("teacher", `<b>تنبيه:</b> ${err.message}`);
             }
         }
