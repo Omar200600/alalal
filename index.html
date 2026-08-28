@@ -339,8 +339,10 @@
     </a-scene>
 
     <script>
-        // ⚠️ ضعي مفتاح Gemini API الخاص بك هنا
-        const aiApiKey = "AIzaSyAQAQ.Ab8RN6IVtAOEdB1rA2cX7-ydQE5z1ckvv_IvSKZqmVNSba4y9A";
+        const aiApiKey = "
+
+ "AIzaSyAQ.Ab8RN6LpUDbYw3V0Qfg-3YuV7X2XlFJWPRB8TWHKPEkMEqyJvA";
+ ";
 
         let state = { studentName: "", grade: "", gradeLabel: "" };
 
@@ -513,15 +515,15 @@
         }
 
         async function fetchGeminiApi(userMessage) {
-            if (!aiApiKey || aiApiKey === "YOUR_GEMINI_API_KEY_HERE") {
-                throw new Error("يرجى إضافة مفتاح Gemini API الخاص بك في الكود (السطر 208).");
+            if (!aiApiKey) {
+                throw new Error("يرجى وضع مفتاح Gemini API الصحيح داخل كود الصفحة.");
             }
 
             const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان لمادة الفيزياء (المنهج اليمني).
 تتحدث مع الطالب (${state.studentName}) في صف (${state.gradeLabel}).
 القواعد:
 1. اشرح المفهوم الفيزيائي بدقة ووضوح وبأسلوب تربوي مبسط وفق المنهج اليمني.
-2. نسّق القوانين بفرمتة KaTeX مثل $F = G \\frac{m_1 m_2}{r^2}$.
+2. نسّق القوانين بفرمتة KaTeX مثل $F = m \\cdot a$ أو $\\tau = F \\cdot d$.
 3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان وبإيجاز مناسب للشات.`;
 
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiApiKey}`;
