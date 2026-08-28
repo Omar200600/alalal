@@ -9,12 +9,11 @@
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
     <!-- مكتبة KaTeX لتنسيق المعادلات والرموز الفيزيائية -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 
     <style>
-        /* إخفاء واجهات VR الافتراضية لمنع تداخلها */
         .a-dialog, .a-dialog-container, .a-enter-vr, .a-enter-ar { 
             display: none !important; 
             visibility: hidden !important; 
@@ -37,7 +36,7 @@
             background-color: #000;
         }
 
-        /* 1. شاشة الترحيب والإعداد (Modal) فوق الجميع */
+        /* 1. شاشة الترحيب والإعداد (Modal) */
         #setup-modal {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -96,7 +95,7 @@
             box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
         }
 
-        /* 2. لوحة العودة وإعادة الترحيب (علوي يمين) */
+        /* 2. لوحة العودة وإعادة الترحيب */
         #nav-panel { 
             position: fixed; 
             top: 15px; 
@@ -122,7 +121,7 @@
             font-size: 0.75rem;
         }
 
-        /* 3. لوحة الدردشة والتفاعل المصغرة الثابتة (سفلي يمين - تعديل الأبعاد والموقع) */
+        /* 3. لوحة الدردشة والتفاعل المصغرة */
         #chat-panel {
             position: fixed;
             bottom: 20px;
@@ -190,7 +189,7 @@
         .btn-send { background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
         .btn-mic { background: #e11d48; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
 
-        /* 4. أزرار الحركة والتوجيه (سفلي يسار - مفصولة لمنع التداخل) */
+        /* 4. أزرار الحركة والتوجيه */
         .control-btn { 
             position: fixed; 
             width: 48px; 
@@ -284,16 +283,13 @@
     <a-scene light="defaultLightsEnabled: false" vr-mode-ui="enabled: false">
         
         <a-assets>
-            <!-- إخفاء/كتم صوت الفيديو الأصلي لمنع التداخل مع صوت الذكاء الاصطناعي -->
             <video id="teacherVideo" src="teacher-video.mp4" loop playsinline webkit-playsinline crossorigin="anonymous" muted></video>
             <img id="marbleTile" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1000&q=80" crossorigin="anonymous">
         </a-assets>
 
-        <!-- إضاءة المشهد -->
         <a-entity light="type: ambient; color: #FFF; intensity: 3.0"></a-entity>
         <a-entity light="type: directional; color: #FFF; intensity: 1.5" position="-1 5 2"></a-entity>
 
-        <!-- الأرضية والجدران -->
         <a-plane position="0 0 0" rotation="-90 0 0" width="20" height="20" src="#marbleTile" repeat="8 8" material="shader: flat; roughness: 0.2;"></a-plane> 
         
         <a-box position="0 4 -10" width="20" height="8" depth="0.2" color="#FFFDD0" material="shader: flat;"></a-box> 
@@ -303,24 +299,20 @@
         
         <a-box position="0 8 0" width="20" height="0.1" depth="20" color="#FFFFFF" material="shader: flat;"></a-box> 
 
-        <!-- لافتة الفصل -->
         <a-box position="0 6.5 -9.8" width="7" height="1" depth="0.1" color="#8B4513" material="shader: flat;">
             <a-text value="PHYSICS CLASSROOM 101" align="center" position="0 0 0.1" color="#D4AF37" width="10"></a-text>
         </a-box>
 
-        <!-- السبورة -->
         <a-box position="1 3.8 -9.8" width="8.4" height="4.2" depth="0.08" color="#5c3a21" material="shader: flat;"></a-box>
         <a-box position="1 3.8 -9.7" width="8" height="3.8" depth="0.08" color="#0B6623" material="shader: flat;">
             <a-text id="blackboard-text" value="Welcome to Physics Class!\nF = m * a" position="0 0 0.06" align="center" width="7" color="#FFFFFF"></a-text>
         </a-box>
 
-        <!-- أفتار المعلم الكروما (تم إنزاله ليكون متصل بالأرضية تماماً) -->
         <a-entity id="teacher-avatar-container" position="-4.5 2.1 -9.5">
             <a-plane id="avatarBox" width="2.8" height="4.2" material="shader: flat; transparent: true; side: double;"></a-plane>
             <a-text value="Physics Teacher AI" position="0 2.3 0" align="center" width="5" color="#D4AF37"></a-text>
         </a-entity>
 
-        <!-- الكراسي -->
         <a-entity id="chairs-matrix">
             <a-entity position="-5 0 -2" rotation="0 180 0">
                 <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
@@ -334,7 +326,6 @@
                 <a-box position="0 0.9 0" width="1.1" height="0.1" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
                 <a-box position="0 1.5 -0.45" width="1.1" height="1.0" depth="0.1" color="#8B0000" material="shader: flat;"></a-box>
             </a-entity>
-
             <a-entity position="5 0 -2" rotation="0 180 0">
                 <a-box position="-0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
                 <a-box position="0.5 0.5 0" width="0.1" height="1.0" depth="1.0" color="#8B0000" material="shader: flat;"></a-box>
@@ -349,15 +340,14 @@
             </a-entity>
         </a-entity>
 
-        <!-- الكاميرا (تم رفع مستوى الرؤية للارتفاع المناسب الطبيعي) -->
         <a-entity id="rig" position="0 2.2 3">
             <a-entity id="head" camera look-controls></a-entity>
         </a-entity>
     </a-scene>
 
     <script>
-        // === مكان مفتاح الـ API للذكاء الاصطناعي (يمكنك التعديل عليه هنا) ===
-        const aiApiKey = "AQ.Ab8RN6LLKnjdsnm1uFDeoAjFcRVY2MrurI3XOmVvqB4h27H1NQ";
+        // === مفتاح GEMINI API المكتمل والمعتمد ===
+        const aiApiKey = "AIzaSyAQ.Ab8RN6LpUDbYw3V0Qfg-3YuV7X2XlFJWPRB8TWHKPEkMEqyJvA";
 
         let state = { studentName: "", grade: "", gradeLabel: "" };
 
@@ -386,7 +376,6 @@
 
             document.getElementById('setup-modal').style.display = 'none';
 
-            // كتم صوت الفيديو تماماً وضمان تشغيله كصورة فقط
             video.muted = true;
             video.play().catch(e => console.log(e));
 
@@ -395,7 +384,6 @@
             appendChatMessage("teacher", welcomeSpeech);
             setTimeout(() => { speak(welcomeSpeech); }, 300);
 
-            // تفريغ كروما الفيديو
             canvasTexture = new THREE.CanvasTexture(canvas);
             var mesh = avatarBox.getObject3D('mesh');
             if (mesh) {
@@ -431,7 +419,6 @@
             if (welcomeSpeech) speak(welcomeSpeech);
         }
 
-        // تحكم حركة الكاميرا
         var rig = document.getElementById('rig');
         var head = document.getElementById('head');
         var keys = {up: false, down: false, left: false, right: false};
@@ -487,13 +474,15 @@
             
             chatHistory.appendChild(msgDiv);
 
-            renderMathInElement(msgDiv, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ],
-                throwOnError: false
-            });
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(msgDiv, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
 
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }
@@ -531,6 +520,10 @@
         }
 
         async function fetchGeminiApi(userMessage) {
+            if (!aiApiKey || aiApiKey.includes("ضع_مفتاحك")) {
+                throw new Error("يرجى وضع مفتاح Gemini API الصحيح داخل كود الصفحة.");
+            }
+
             const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان لمادة الفيزياء (المنهج اليمني).
 تتحدث مع الطالب (${state.studentName}) في صف (${state.gradeLabel}).
 القواعد:
@@ -538,14 +531,16 @@
 2. نسّق القوانين بفرمتة KaTeX مثل $F = m \\cdot a$ أو $\\tau = F \\cdot d$.
 3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان وبإيجاز مناسب للشات.`;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${aiApiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiApiKey}`;
 
             const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
-                    contents: [{ parts: [{ text: userMessage }] }]
+                    contents: [{
+                        role: "user",
+                        parts: [{ text: systemPrompt + "\n\nسؤال الطالب: " + userMessage }]
+                    }]
                 })
             });
 
