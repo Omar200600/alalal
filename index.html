@@ -190,7 +190,7 @@
         .btn-send { background: #0284c7; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
         .btn-mic { background: #e11d48; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
 
-        /* 4. أزرار الحركة والتوجيه */
+        /* 4. أزرار الحركة والتوجيه (سفلي يسار) */
         .control-btn { 
             position: fixed; 
             width: 48px; 
@@ -355,9 +355,8 @@
     </a-scene>
 
     <script>
-        // البيانات الخاصة بك التي أرسلتها بالكامل
-        const aiApiKey = "AQ.Ab8RN6J74uUxmksUjMgF1as48BT3CkPV_ftGXaFyP9XA4AwefA";
-        const aiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+        // === مفتاح الـ API الصادر مباشرة من Google AI Studio ===
+        const aiApiKey = "AQ.Ab8RN6LLKnjdsnm1uFDeoAjFcRVY2MrurI3XOmVvqB4h27H1NQ";
 
         let state = { studentName: "", grade: "", gradeLabel: "" };
 
@@ -429,6 +428,7 @@
             if (welcomeSpeech) speak(welcomeSpeech);
         }
 
+        // تحكم حركة الكاميرا
         var rig = document.getElementById('rig');
         var head = document.getElementById('head');
         var keys = {up: false, down: false, left: false, right: false};
@@ -527,7 +527,6 @@
             }
         }
 
-        // الدالة المعدلة خصيصاً لاستعمال X-goog-api-key مع الرابط المطلوب
         async function fetchGeminiApi(userMessage) {
             const systemPrompt = `أنت المعلم الافتراضي للأستاذ عمر حسان لمادة الفيزياء (المنهج اليمني).
 تتحدث مع الطالب (${state.studentName}) في صف (${state.gradeLabel}).
@@ -536,14 +535,14 @@
 2. نسّق القوانين بفرمتة KaTeX مثل $F = m \\cdot a$ أو $\\tau = F \\cdot d$.
 3. كن مشجعاً وصبوراً بأسلوب الأستاذ عمر حسان وبإيجاز مناسب للشات.`;
 
-            const res = await fetch(aiApiUrl, {
+            // الرابط المباشر الرسمي المستقر للـ Gemini Flash API
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${aiApiKey}`;
+
+            const res = await fetch(url, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-goog-api-key": aiApiKey
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    system_instruction: { parts: [{ text: systemPrompt }] },
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
                     contents: [{ parts: [{ text: userMessage }] }]
                 })
             });
